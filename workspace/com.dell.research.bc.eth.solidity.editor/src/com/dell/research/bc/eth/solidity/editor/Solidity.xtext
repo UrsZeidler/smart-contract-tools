@@ -52,7 +52,7 @@ DefinitionBody:
     "}";
 
 InheritanceSpecifier:
-    superType=[ContractOrLibrary] args=FunctionCallListArguments;
+    superType=[ContractOrLibrary] (args=FunctionCallListArguments)?;
 
 FunctionCallListArguments:
     "(" {FunctionCallListArguments} (arguments+=Expression ("," arguments+=Expression)*)? ")";
