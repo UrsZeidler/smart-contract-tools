@@ -27,6 +27,7 @@ import com.dell.research.bc.eth.solidity.editor.solidity.Statement
 import com.dell.research.bc.eth.solidity.editor.solidity.StructDefinition
 import com.dell.research.bc.eth.solidity.editor.solidity.VarVariableDeclaration
 import com.dell.research.bc.eth.solidity.editor.solidity.VarVariableTupleVariableDeclaration
+import com.dell.research.bc.eth.solidity.editor.solidity.Event
 import com.google.inject.Inject
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider
 import org.eclipse.jface.viewers.StyledString
@@ -68,6 +69,20 @@ class SolidityLabelProvider extends DefaultEObjectLabelProvider {
     def text(Library ld) {
         ld.name
     }
+
+	def text(Event ev){
+		var retValue = new StyledString(ev?.name ?: "")
+        retValue = retValue.
+            append(new StyledString(getText(ev.parameters)))
+
+//        if (ev.returnParameters != null) {
+//            retValue = retValue.append(new StyledString(
+//                " : " + getText(ev.returnParameters),
+//                StyledString::DECORATIONS_STYLER))
+//        } // if
+        retValue
+
+	}
 
     def text(FunctionDefinition fd) {
         var retValue = new StyledString(fd?.name ?: "")
@@ -170,6 +185,10 @@ class SolidityLabelProvider extends DefaultEObjectLabelProvider {
 
     // Images (found in the "icons" folder
     // ---------------------------------------------------
+    def image(Event cd){
+    	'event_obj.gif'
+    }
+    
     def image(ImportDirective cd) {
         'imp_obj.png'
     }

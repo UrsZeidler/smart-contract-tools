@@ -26,6 +26,7 @@ import org.eclipse.xtext.ui.IImageHelper
 import org.eclipse.xtext.ui.editor.outline.IOutlineNode
 import org.eclipse.xtext.ui.editor.outline.impl.DefaultOutlineTreeProvider
 import org.eclipse.xtext.ui.editor.outline.impl.DocumentRootNode
+import com.dell.research.bc.eth.solidity.editor.solidity.Event
 
 /**
  * Customization of the default outline structure.
@@ -94,6 +95,10 @@ class SolidityOutlineTreeProvider extends DefaultOutlineTreeProvider {
     }
 
     def protected _isLeaf(Modifier md) {
+        true
+    }
+
+    def protected _isLeaf(Event ev) {
         true
     }
 
