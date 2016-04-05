@@ -26,9 +26,9 @@ Solidity:
     library+=Library)*;
 
 ImportDirective:
-    "import" url=STRING ";" | 
-    "import" "*" "as" unitAlias=ID "from" url=STRING ";" |
-    "import" "{" symbolAliases+=SymbolAlias ("," symbolAliases+=SymbolAlias)?  "}" "from" url=STRING ";"    
+    "import" importURI=STRING ";" | 
+    "import" "*" "as" unitAlias=ID "from" importURI=STRING ";" |
+    "import" "{" symbolAliases+=SymbolAlias ("," symbolAliases+=SymbolAlias)?  "}" "from" importURI=STRING ";"    
     ; 
     
 SymbolAlias:

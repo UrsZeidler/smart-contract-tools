@@ -50,12 +50,12 @@ class ImportDirectiveTest  extends AbsSolidityUnitTest {
 
     @Test
     def void givenValidImportDirective_thenParsedURLIsCorrect() {
-        Assert::assertEquals(IMPORT_URL_1, VALID_IMPORT.parse.importDirective.last.url);
+        Assert::assertEquals(IMPORT_URL_1, VALID_IMPORT.parse.importDirective.last.importURI);
     }
     
     @Test
     def void givenValidImportDirective1_thenParsedURLIsCorrect() {
-        Assert::assertEquals(IMPORT_URL_1, VALID_IMPORT1.parse.importDirective.last.url);
+        Assert::assertEquals(IMPORT_URL_1, VALID_IMPORT1.parse.importDirective.last.importURI);
     }
     
     @Test
@@ -65,7 +65,7 @@ class ImportDirectiveTest  extends AbsSolidityUnitTest {
     
     @Test
     def void givenValidImportDirective2_thenParsedURLIsCorrect() {
-        Assert::assertEquals(IMPORT_URL_1, VALID_IMPORT2.parse.importDirective.last.url);
+        Assert::assertEquals(IMPORT_URL_1, VALID_IMPORT2.parse.importDirective.last.importURI);
     }
     
     @Test

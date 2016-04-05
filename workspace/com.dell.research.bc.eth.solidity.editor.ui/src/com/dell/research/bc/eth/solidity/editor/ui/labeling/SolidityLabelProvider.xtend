@@ -58,7 +58,7 @@ class SolidityLabelProvider extends DefaultEObjectLabelProvider {
 // Look at pages 225-227 of the Xtext book on how to use
 // StyledStrings to produce a more attractive outline view 
     def text(ImportDirective id) {
-        id.url
+        id.importURI
     }
 
     def text(Contract cd) {
