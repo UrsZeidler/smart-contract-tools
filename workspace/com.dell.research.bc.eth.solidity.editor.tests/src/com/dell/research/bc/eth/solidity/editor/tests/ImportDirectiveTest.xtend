@@ -33,13 +33,46 @@ class ImportDirectiveTest  extends AbsSolidityUnitTest {
         import "«IMPORT_URL_1»" ;
     '''
 
+    val VALID_IMPORT1 = '''
+        import * as x from "«IMPORT_URL_1»" ;
+    '''
+
+    val VALID_IMPORT2 = '''
+        import {a as b, c as d} from "«IMPORT_URL_1»" ;
+    '''
+
     @Test
     def void givenValidImportDirective_thenNoErrors() {
         VALID_IMPORT.parse.assertNoErrors
+        VALID_IMPORT1.parse.assertNoErrors
+        VALID_IMPORT2.parse.assertNoErrors
     }
 
     @Test
     def void givenValidImportDirective_thenParsedURLIsCorrect() {
         Assert::assertEquals(IMPORT_URL_1, VALID_IMPORT.parse.importDirective.last.url);
     }
+    
+    @Test
+    def void givenValidImportDirective1_thenParsedURLIsCorrect() {
+        Assert::assertEquals(IMPORT_URL_1, VALID_IMPORT1.parse.importDirective.last.url);
+    }
+    
+    @Test
+    def void givenValidImportDirective1_thenParsedUnitAliasCorrect() {
+        Assert::assertEquals("x", VALID_IMPORT1.parse.importDirective.last.unitAlias);
+    }
+    
+    @Test
+    def void givenValidImportDirective2_thenParsedURLIsCorrect() {
+        Assert::assertEquals(IMPORT_URL_1, VALID_IMPORT2.parse.importDirective.last.url);
+    }
+    
+    @Test
+    def void givenValidImportDirective2_thenParsedSymbolAliasCorrect() {
+        Assert::assertEquals(2, VALID_IMPORT2.parse.importDirective.last.symbolAliases.size);
+        Assert::assertEquals("a", VALID_IMPORT2.parse.importDirective.last.symbolAliases.get(0).symbol);
+        Assert::assertEquals("b", VALID_IMPORT2.parse.importDirective.last.symbolAliases.get(0).alias);
+    }
+    
 } // ImportDirectiveTest
