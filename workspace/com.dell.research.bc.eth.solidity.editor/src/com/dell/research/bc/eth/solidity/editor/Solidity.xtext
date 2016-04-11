@@ -265,7 +265,15 @@ PlaceHolderStatement:
     "_" {PlaceHolderStatement};
 
 Expression:
-    Assignment;
+    Assignment |
+    ThisExpression
+    ;
+
+ThisExpression returns Expression:
+{ThisExpression} "this" qualifiers+=Qualifier* 
+;
+
+
 
     // Right associative
 Assignment returns Expression:
