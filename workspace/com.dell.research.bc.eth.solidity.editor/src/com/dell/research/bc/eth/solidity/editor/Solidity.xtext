@@ -197,6 +197,36 @@ Qualifier:
 
 Field:
     "." field=ID;
+    
+
+//Primary:
+//	PrimaryNoNewArray | ArrayCreationExpression  
+//;
+//
+//ArrayCreationExpression:
+//	
+//;
+//    
+//PrimaryNoNewArray:
+//	"this"|(Expression)|FieldAccess|MethodInvocation
+//;
+//
+//MethodInvocation:
+// methodName=MethodInvocation1 arg= FunctionCallListArguments 
+//
+//	
+//;
+//
+//
+//MethodInvocation1:  
+//	methodName = ID arg= FunctionCallListArguments|
+//  fieldName= Primary "." methodName = ID arg= FunctionCallListArguments|
+// {MethodInvocation1} "super" "." methodName = ID
+//;
+//
+//FieldAccess:
+//	Primary "." field=ID | "super" "." field=ID
+//;
 
 Index:
     "[" {Index} value=Expression? "]";
@@ -266,11 +296,18 @@ PlaceHolderStatement:
 
 Expression:
     Assignment |
-    ThisExpression
+    ThisExpression |
+    SuperExpression
     ;
 
-ThisExpression returns Expression:
-{ThisExpression} "this" qualifiers+=Qualifier* 
+ThisExpression:
+ "this" fieldOrMethod=Field qualifiers+=(Index |Arguments)*  
+//qualifiers+=Qualifier* 
+;
+
+SuperExpression:
+ "super" fieldOrMethod=Field qualifiers+=(Index |Arguments)*   
+//qualifiers+=Qualifier* 
 ;
 
 
