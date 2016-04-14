@@ -10,15 +10,19 @@
  *******************************************************************************/
 package com.dell.research.bc.eth.solidity.editor
 
-import static extension org.eclipse.xtext.EcoreUtil2.*
-import com.dell.research.bc.eth.solidity.editor.solidity.FunctionDefinition
-import com.dell.research.bc.eth.solidity.editor.solidity.ReturnStatement
-import org.eclipse.emf.ecore.EObject
 import com.dell.research.bc.eth.solidity.editor.solidity.Block
 import com.dell.research.bc.eth.solidity.editor.solidity.ContractOrLibrary
+import com.dell.research.bc.eth.solidity.editor.solidity.FunctionDefinition
 import com.dell.research.bc.eth.solidity.editor.solidity.IfStatement
 import com.dell.research.bc.eth.solidity.editor.solidity.InheritanceSpecifier
+import com.dell.research.bc.eth.solidity.editor.solidity.ReturnStatement
 import com.dell.research.bc.eth.solidity.editor.solidity.Solidity
+import com.dell.research.bc.eth.solidity.editor.solidity.StandardVariableDeclaration
+import com.dell.research.bc.eth.solidity.editor.solidity.VisibilityEnum
+import com.dell.research.bc.eth.solidity.editor.solidity.VisibilitySpecifier
+import org.eclipse.emf.ecore.EObject
+
+import static extension org.eclipse.xtext.EcoreUtil2.*
 
 // See page 202 of Xtext book
 class SolidityUtil {
@@ -65,6 +69,19 @@ class SolidityUtil {
 			}
 		} // while !toVisit.empty
 		visited
+	}
+
+	def static isPrivate(VisibilitySpecifier vd){
+		if(vd==null) return false;
+		VisibilityEnum.PRIVATE.literal.equals(vd.visibility.literal)		
+	}
+	
+	def static isPrivate(StandardVariableDeclaration vd){
+		vd.optionalElements.filter(VisibilitySpecifier).exists[it.isPrivate]	
+	}
+
+	def static isPrivate(FunctionDefinition fd){
+		fd.optionalElements.filter(VisibilitySpecifier).exists[it.isPrivate]
 	}
 
 } // SolidityUtil
