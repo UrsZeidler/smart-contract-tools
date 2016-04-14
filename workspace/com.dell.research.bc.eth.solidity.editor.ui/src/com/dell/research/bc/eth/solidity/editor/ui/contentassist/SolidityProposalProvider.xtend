@@ -50,8 +50,8 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 		allAllField.addAll(cl.body.variables.filter(StandardVariableDeclaration))
 		allMethods.addAll(cl.body.functions)
 		ch.forEach[
-			allAllField.addAll(it.body.variables.filter(StandardVariableDeclaration))
-			allMethods.addAll(it.body.functions)
+			allAllField.addAll(it.body.variables.filter(StandardVariableDeclaration).filter[!isPrivate(it)])
+			allMethods.addAll(it.body.functions.filter[!isPrivate(it)])
 		]
 		
 		allAllField.forEach[
