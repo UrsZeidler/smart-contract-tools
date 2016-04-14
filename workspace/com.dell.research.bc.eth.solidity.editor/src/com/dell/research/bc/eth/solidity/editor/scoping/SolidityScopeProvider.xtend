@@ -10,6 +10,17 @@
  *******************************************************************************/
 package com.dell.research.bc.eth.solidity.editor.scoping
 
+import com.dell.research.bc.eth.solidity.editor.solidity.Contract
+import com.dell.research.bc.eth.solidity.editor.solidity.ModifierInvocation
+import java.util.HashSet
+import org.eclipse.emf.ecore.EReference
+import org.eclipse.xtext.scoping.IScope
+import org.eclipse.xtext.scoping.Scopes
+import org.eclipse.xtext.scoping.impl.AbstractDeclarativeScopeProvider
+
+import static extension com.dell.research.bc.eth.solidity.editor.SolidityUtil.*
+import static extension org.eclipse.xtext.EcoreUtil2.*
+
 /**
  * This class contains custom scoping description.
  * 
@@ -17,6 +28,18 @@ package com.dell.research.bc.eth.solidity.editor.scoping
  * on how and when to use it.
  *
  */
-class SolidityScopeProvider extends org.eclipse.xtext.scoping.impl.AbstractDeclarativeScopeProvider {
+class SolidityScopeProvider extends AbstractDeclarativeScopeProvider {
+
+	def IScope scope_ModifierInvocation_name(ModifierInvocation modifier, EReference eReference) {
+		val c = modifier.getContainerOfType(Contract)
+
+		val included = new HashSet()
+		var allContracts = c.classHierarchy.filter(Contract)
+		included.addAll(c.body.modifiers)
+		allContracts.forEach [
+			included.addAll(it.body.modifiers)
+		]
+		Scopes::scopeFor(included)
+	}
 
 }
