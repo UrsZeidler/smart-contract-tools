@@ -271,7 +271,7 @@ Expression:
     ;
 
 ThisExpression:
- "this" fieldOrMethod=Field qualifiers+=(Index |Arguments)*  
+ "this" fieldOrMethod=Field qualifiers+=(Index |Arguments)*
 ;
 
 SuperExpression:
