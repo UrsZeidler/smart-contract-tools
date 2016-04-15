@@ -105,7 +105,7 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 		var cl = model.getContainerOfType(ContractOrLibrary)
 		var ch = classHierarchy(cl)
 
-		val allAllField = new HashSet // <StandardVariableDeclaration>
+		val allAllField = new HashSet
 		val allMethods = new HashSet
 
 		ch.forEach [
