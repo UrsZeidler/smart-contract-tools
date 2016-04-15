@@ -272,7 +272,15 @@ PlaceHolderStatement:
     "_" {PlaceHolderStatement};
 
 Expression:
+	Message |
+//	CurrentBlock|
+//	Transaction|
+//	NowExpression|
     Assignment;
+
+//NowExpression returns Expression:
+//	{NowExpression} "now"
+//;
 
     // Right associative
 Assignment returns Expression:
@@ -396,6 +404,18 @@ StringLiteral:
 TypeCast:
     value=ElementaryTypeNameEnum "(" expression=Expression ")";
 
+
+Message :
+	"msg" "." value=MsgFieldEnum
+;
+
+//CurrentBlock:
+//	"block" "." value=CurrentBlockFieldEnum
+//;
+//
+//Transaction:
+//	"tx" "." value=TransactionFieldEnum
+//;
     // Enums
 //-----------------------------------------------------------------------------
 enum ElementaryTypeNameEnum:
@@ -462,6 +482,18 @@ enum TimeSubdenominationEnum:
     SECONDS="seconds" | MINUTES="minutes" | HOURS="hours" | DAYS="days" | WEEKS="weeks" | YEARS="years";
 
     // Also "EOS" DAF
+
+enum MsgFieldEnum:
+	DATA="data"|GAS="gas"|SENDER="sender"|SIG="sig"|VALUE="value"
+;
+
+enum TransactionFieldEnum:
+	GASPRICE="gasprice"|ORIGIN="origin"
+;
+
+enum CurrentBlockFieldEnum:
+	COINBASE="coinbase"|DIFFICULTY="difficulty"|GASLIMIT="gaslimit"|NUMBER="number"|
+	BLOCKHASH="blockhash"|TIMESTAMP="timestamp" ;
 
 enum ReservedWordsEnum:
     AS="as" | CASE="case" | CATCH="catch" | FINAL="final" | LET="let" | MATCH="match" | OF="of" |
