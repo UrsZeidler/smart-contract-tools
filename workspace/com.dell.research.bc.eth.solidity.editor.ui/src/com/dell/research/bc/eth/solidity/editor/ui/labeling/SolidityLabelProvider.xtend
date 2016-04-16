@@ -125,7 +125,10 @@ class SolidityLabelProvider extends DefaultEObjectLabelProvider {
 
     def text(Modifier md) {
         val StringBuilder sb = new StringBuilder(md?.name);
-        sb.append(getText(md.parameters))
+        if(md.parameters!=null)
+        	sb.append(getText(md.parameters))
+        else 
+        	sb.append("()")
         sb.toString
     }
 
