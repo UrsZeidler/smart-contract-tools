@@ -21,6 +21,7 @@ import com.dell.research.bc.eth.solidity.editor.solidity.Expression
 import com.dell.research.bc.eth.solidity.editor.solidity.Message
 import com.dell.research.bc.eth.solidity.editor.solidity.NewExpression
 import com.dell.research.bc.eth.solidity.editor.solidity.NotExpression
+import com.dell.research.bc.eth.solidity.editor.solidity.Now
 import com.dell.research.bc.eth.solidity.editor.solidity.NumberDimensionless
 import com.dell.research.bc.eth.solidity.editor.solidity.Or
 import com.dell.research.bc.eth.solidity.editor.solidity.SolidityFactory
@@ -30,6 +31,8 @@ import com.dell.research.bc.eth.solidity.editor.solidity.Time
 import com.dell.research.bc.eth.solidity.editor.solidity.Tuple
 import com.dell.research.bc.eth.solidity.editor.solidity.TypeCast
 import com.dell.research.bc.eth.solidity.editor.solidity.VariableDeclarationExpression
+import com.dell.research.bc.eth.solidity.editor.solidity.CurrentBlock
+import com.dell.research.bc.eth.solidity.editor.solidity.Transaction
 
 class SolidityTypeProvider {
 
@@ -82,9 +85,9 @@ class SolidityTypeProvider {
 			Time: timeType
 			TypeCast: typeCastType
 			Message: messageType(e as Message)
-//			EtherBlock: blockType(e as EtherBlock)
-//			Transaction: transactionType(e as Transaction)
-//			NowExpression : intType
+			CurrentBlock: blockType(e as CurrentBlock)
+			Transaction: transactionType(e as Transaction)
+			Now : intType
 			default: booleanType
 		} // switch
 	} // typeFor
@@ -101,31 +104,31 @@ class SolidityTypeProvider {
 		} // switch
 	} // expectedType
 
-//	private def transactionType(Transaction tx) {
-//		switch (tx.value) {
-//			case GASPRICE: intType
-//			case ORIGIN: addressType
-//		}
-//	}
+	private def transactionType(Transaction tx) {
+		switch (tx.field) {
+			case "gasprice": intType
+			case "origin": addressType
+		}
+	}
 
-//	private def blockType(EtherBlock block) {
-//		switch (block.value) {
-//			case BLOCKHASH: intType
-//			case COINBASE: addressType
-//			case DIFFICULTY: intType
-//			case GASLIMIT: intType
-//			case NUMBER: intType
-//			case TIMESTAMP: intType
-//		}
-//	}
+	private def blockType(CurrentBlock block) {
+		switch (block.field) {
+			case "blockhash": intType
+			case "coinbase": addressType
+			case "difficulty": intType
+			case "gaslimit": intType
+			case "number": intType
+			case "timestamp": intType
+		}
+	}
 
 	private def messageType(Message msg) {
-		switch (msg.value) {
-			case DATA: byteType
-			case GAS: intType
-			case SENDER: addressType
-			case SIG: byteType
-			case VALUE: intType
+		switch (msg.field) {
+			case "data": byteType
+			case "gas": intType
+			case "sender": addressType
+			case "sig": byteType
+			case "value": intType
 		}
 	}
 } // SolidityTypeProvider
