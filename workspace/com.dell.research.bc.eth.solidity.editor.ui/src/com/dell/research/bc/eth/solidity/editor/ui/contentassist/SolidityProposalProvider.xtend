@@ -10,7 +10,6 @@
  *******************************************************************************/
 package com.dell.research.bc.eth.solidity.editor.ui.contentassist
 
-import com.dell.research.bc.eth.solidity.editor.solidity.Contract
 import com.dell.research.bc.eth.solidity.editor.solidity.ContractOrLibrary
 import com.dell.research.bc.eth.solidity.editor.solidity.StandardVariableDeclaration
 import com.dell.research.bc.eth.solidity.editor.ui.contentassist.AbstractSolidityProposalProvider
