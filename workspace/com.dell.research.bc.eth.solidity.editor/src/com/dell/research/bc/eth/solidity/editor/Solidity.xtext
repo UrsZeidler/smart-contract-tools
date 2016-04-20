@@ -204,7 +204,7 @@ Qualifier:
 
 Field:
     "." field=ID;
-
+    
 Index:
     "[" {Index} value=Expression? "]";
 
@@ -272,7 +272,20 @@ PlaceHolderStatement:
     "_" {PlaceHolderStatement};
 
 Expression:
-    Assignment;
+    Assignment |
+    ThisExpression |
+    SuperExpression
+    ;
+
+ThisExpression:
+ "this" fieldOrMethod=Field qualifiers+=(Index |Arguments)*
+;
+
+SuperExpression:
+ "super" fieldOrMethod=Field qualifiers+=(Index |Arguments)*   
+;
+
+
 
     // Right associative
 Assignment returns Expression:
