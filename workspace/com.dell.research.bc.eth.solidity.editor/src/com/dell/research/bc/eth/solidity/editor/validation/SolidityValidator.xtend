@@ -182,14 +182,14 @@ class SolidityValidator extends AbstractSolidityValidator {
 			case BLOCK:
 				if (!CURRENTBLOCK_MEMBERS.contains(msg.field))
 					error(
-						"Not a message member. ",
+						"Not a block member. ",
 						null,
 						NO_MEMBER
 					)
 			case TX:
 				if (!TRANSACTION_MEMBERS.contains(msg.field))
 					error(
-						"Not a message member. ",
+						"Not a transaction member. ",
 						null,
 						NO_MEMBER
 					)
