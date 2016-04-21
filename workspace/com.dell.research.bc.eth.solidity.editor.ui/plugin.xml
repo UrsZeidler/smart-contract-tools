@@ -6,12 +6,13 @@
     <extension
             point="org.eclipse.ui.editors">
         <editor
-            class="com.dell.research.bc.eth.solidity.editor.ui.SolidityExecutableExtensionFactory:org.eclipse.xtext.ui.editor.XtextEditor"
-            contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
-            default="true"
-            extensions="sol"
-            id="com.dell.research.bc.eth.solidity.editor.Solidity"
-            name="Solidity Editor">
+              class="com.dell.research.bc.eth.solidity.editor.ui.SolidityExecutableExtensionFactory:org.eclipse.xtext.ui.editor.XtextEditor"
+              contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
+              default="true"
+              extensions="sol"
+              icon="icons/sol-file.png"
+              id="com.dell.research.bc.eth.solidity.editor.Solidity"
+              name="Solidity Editor">
         </editor>
     </extension>
     <extension
