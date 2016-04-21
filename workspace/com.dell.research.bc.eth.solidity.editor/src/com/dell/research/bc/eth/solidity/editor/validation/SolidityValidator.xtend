@@ -16,6 +16,7 @@ import com.dell.research.bc.eth.solidity.editor.solidity.Contract
 import com.dell.research.bc.eth.solidity.editor.solidity.ContractOrLibrary
 import com.dell.research.bc.eth.solidity.editor.solidity.Expression
 import com.dell.research.bc.eth.solidity.editor.solidity.Library
+import com.dell.research.bc.eth.solidity.editor.solidity.SpecialVariables
 import com.dell.research.bc.eth.solidity.editor.solidity.ReturnStatement
 import com.dell.research.bc.eth.solidity.editor.solidity.SolidityPackage
 import com.dell.research.bc.eth.solidity.editor.solidity.StandardVariableDeclaration
@@ -39,6 +40,7 @@ class SolidityValidator extends AbstractSolidityValidator {
     public static val UNREACHABE_CODE = "com.dell.research.bc.eth.solidity.editor.UnreachableCode"
     public static val DUPLICATE_ELEMENT = "com.dell.research.bc.eth.solidity.editor.DuplicateElement"
     public static val INCOMPATIBLE_TYPES = "com.dell.research.bc.eth.solidity.editor.IncompatibleTypes"
+    public static val NO_MEMBER = "com.dell.research.bc.eth.solidity.editor.NoMember"
 
     @Check
     def checkNoCycleInContractOrLibraryHierarchy(ContractOrLibrary contract) {
@@ -165,4 +167,34 @@ class SolidityValidator extends AbstractSolidityValidator {
             }
         } // if
     } // checkCompatibleTypes
+    
+    
+    @Check
+	def checkSpecialVariablesMembers(SpecialVariables msg) {
+		switch (msg.type) {
+			case MSG:
+				if (!MESSAGE_MEMBERS.contains(msg.field))
+					error(
+						"Not a message member. ",
+						null,
+						NO_MEMBER
+					)
+			case BLOCK:
+				if (!CURRENTBLOCK_MEMBERS.contains(msg.field))
+					error(
+						"Not a message member. ",
+						null,
+						NO_MEMBER
+					)
+			case TX:
+				if (!TRANSACTION_MEMBERS.contains(msg.field))
+					error(
+						"Not a message member. ",
+						null,
+						NO_MEMBER
+					)
+		}
+
+	}
+		
 } // SolidityValidator
