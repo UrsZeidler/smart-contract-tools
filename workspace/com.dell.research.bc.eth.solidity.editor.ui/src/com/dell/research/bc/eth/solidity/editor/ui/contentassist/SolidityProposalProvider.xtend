@@ -10,9 +10,11 @@
  *******************************************************************************/
 package com.dell.research.bc.eth.solidity.editor.ui.contentassist
 
+import com.dell.research.bc.eth.solidity.editor.SolidityUtil
 import com.dell.research.bc.eth.solidity.editor.solidity.ContractOrLibrary
+import com.dell.research.bc.eth.solidity.editor.solidity.SpecialVariables
+import com.dell.research.bc.eth.solidity.editor.solidity.QualifiedIdentifier
 import com.dell.research.bc.eth.solidity.editor.solidity.StandardVariableDeclaration
-import com.dell.research.bc.eth.solidity.editor.ui.contentassist.AbstractSolidityProposalProvider
 import java.util.HashSet
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.Assignment
@@ -23,7 +25,7 @@ import org.eclipse.xtext.ui.editor.contentassist.ICompletionProposalAcceptor
 import static com.dell.research.bc.eth.solidity.editor.SolidityUtil.*
 
 import static extension org.eclipse.xtext.EcoreUtil2.*
-import com.dell.research.bc.eth.solidity.editor.solidity.QualifiedIdentifier
+import com.dell.research.bc.eth.solidity.editor.solidity.SpecialExpression
 
 /**
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#content-assist
@@ -44,6 +46,7 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 		val foundfield =  allAllField.findFirst[
 			it.variable.name.equals(fieldname)
 		]
+		if(foundfield==null) return
 		var qi = foundfield.type as QualifiedIdentifier
 		val typename = qi.identifier;
 		var type = model.resourceSet.allContents.filter(ContractOrLibrary).findFirst[
@@ -53,7 +56,7 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 		fillAllFieldsAndMethods(type, acceptor, context, ".")		
 	}
 
-	override completeThisExpression_FieldOrMethod(EObject model, Assignment assignment, ContentAssistContext context,
+	private def completeThisExpression_FieldOrMethod(EObject model, Assignment assignment, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor) {
 		fillAllFieldsAndMethods(model, acceptor, context, ".")
 	}
@@ -99,7 +102,7 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 		]
 	}
 
-	override completeSuperExpression_FieldOrMethod(EObject model, Assignment assignment, ContentAssistContext context,
+	private def completeSuperExpression_FieldOrMethod(EObject model, Assignment assignment, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor) {
 		var cl = model.getContainerOfType(ContractOrLibrary)
 		var ch = classHierarchy(cl)
@@ -124,5 +127,30 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 			]
 		}
 
+	override completeSpecialExpression_FieldOrMethod(EObject model, Assignment assignment, ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
+		switch ((model as SpecialExpression).type) {
+				case SUPER: completeSuperExpression_FieldOrMethod(model,assignment,context,acceptor)
+				case THIS: completeThisExpression_FieldOrMethod(model,assignment,context,acceptor)
+			}
 	}
-	
+
+
+	override completeSpecialVariables_Field(EObject model, Assignment assignment, ContentAssistContext context,
+		ICompletionProposalAcceptor acceptor) {
+		switch ((model as SpecialVariables).type) {
+			case MSG:
+				SolidityUtil.MESSAGE_MEMBERS.forEach [
+					acceptor.accept(createCompletionProposal(it, it, null, context));
+				]
+			case BLOCK:
+				SolidityUtil.CURRENTBLOCK_MEMBERS.forEach [
+					acceptor.accept(createCompletionProposal(it, it, null, context));
+				]
+			case TX:
+				SolidityUtil.TRANSACTION_MEMBERS.forEach [
+					acceptor.accept(createCompletionProposal(it, it, null, context));
+				]
+		}
+	}
+		
+}

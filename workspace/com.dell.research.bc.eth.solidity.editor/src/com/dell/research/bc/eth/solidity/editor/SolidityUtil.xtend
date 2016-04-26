@@ -20,13 +20,19 @@ import com.dell.research.bc.eth.solidity.editor.solidity.Solidity
 import com.dell.research.bc.eth.solidity.editor.solidity.StandardVariableDeclaration
 import com.dell.research.bc.eth.solidity.editor.solidity.VisibilityEnum
 import com.dell.research.bc.eth.solidity.editor.solidity.VisibilitySpecifier
+import com.google.common.collect.Sets
+import java.util.Set
 import org.eclipse.emf.ecore.EObject
 
 import static extension org.eclipse.xtext.EcoreUtil2.*
 
 // See page 202 of Xtext book
 class SolidityUtil {
-
+	
+	public static Set<String>  MESSAGE_MEMBERS = Sets.newHashSet("sender","value","data","gas","sig") 
+	public static Set<String>  TRANSACTION_MEMBERS = Sets.newHashSet("gasprice","origin") 
+	public static Set<String>  CURRENTBLOCK_MEMBERS = Sets.newHashSet("coinbase","difficulty","gaslimit","number","blockhash","timestamp") 
+	
     def static containingSolidity(EObject e) {
         e.getContainerOfType(typeof(Solidity))
     }
