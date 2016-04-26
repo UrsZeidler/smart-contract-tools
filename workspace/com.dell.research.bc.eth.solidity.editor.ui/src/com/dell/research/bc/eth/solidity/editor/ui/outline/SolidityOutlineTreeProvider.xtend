@@ -44,7 +44,7 @@ class SolidityOutlineTreeProvider extends DefaultOutlineTreeProvider {
     def protected _createChildren(DocumentRootNode parentNode, Solidity solidity) {
 
         if (solidity.importDirective.size > 0) {
-            createEStructuralFeatureNode(parentNode, solidity, SolidityPackage.Literals.SOLIDITY__IMPORT_DIRECTIVE,
+            createEStructuralFeatureNode(parentNode, solidity, SolidityPackage.eINSTANCE.solidity_ImportDirective,
             imageHelper.getImage("impc_obj.png"), "import declarations", false);
         }
 
