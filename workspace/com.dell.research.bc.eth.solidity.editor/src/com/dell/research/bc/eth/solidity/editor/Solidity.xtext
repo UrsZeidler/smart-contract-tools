@@ -272,20 +272,13 @@ PlaceHolderStatement:
     "_" {PlaceHolderStatement};
 
 Expression:
-    Assignment |
-    ThisExpression |
-    SuperExpression
-    ;
+    SpecialExpression |
+    Assignment
+     ;
 
-ThisExpression:
- "this" fieldOrMethod=Field qualifiers+=(Index |Arguments)*
+SpecialExpression:
+ type=SpecialExpressionTypeEnum fieldOrMethod=Field? qualifiers+=(Index |Arguments)*
 ;
-
-SuperExpression:
- "super" fieldOrMethod=Field qualifiers+=(Index |Arguments)*   
-;
-
-
 
     // Right associative
 Assignment returns Expression:
@@ -382,6 +375,7 @@ PrimaryExpression returns Expression:
     "(" ")" {Tuple};
 
 Literal:
+	SpecialVariables |
     BooleanConst |
     Number |
     StringLiteral;
@@ -392,6 +386,7 @@ BooleanConst:
 Number:
     NumberDimensionless |
     Ether |
+    Now|
     Time;
 
 NumberDimensionless:
@@ -408,6 +403,12 @@ StringLiteral:
 
 TypeCast:
     value=ElementaryTypeNameEnum "(" expression=Expression ")";
+
+Now :
+	{Now} "now";
+
+SpecialVariables :
+	type=SpecialVariablesTypeEnum "." field=ID qualifiers+=Qualifier*;
 
     // Enums
 //-----------------------------------------------------------------------------
@@ -476,8 +477,13 @@ enum TimeSubdenominationEnum:
 
     // Also "EOS" DAF
 
+enum SpecialVariablesTypeEnum:
+	MSG="msg"|BLOCK="block"|TX="tx";
+
+enum SpecialExpressionTypeEnum:
+	SUPER="super"|THIS="this";
+
 enum ReservedWordsEnum:
     AS="as" | CASE="case" | CATCH="catch" | FINAL="final" | LET="let" | MATCH="match" | OF="of" |
     RELOCATABLE="relocatable" | SWITCH="switch" | TRY="try" | TYPE="type" | TYPEOF="typeof" | USING="using" |
     ILLEGAL="ILLEGAL";
-
