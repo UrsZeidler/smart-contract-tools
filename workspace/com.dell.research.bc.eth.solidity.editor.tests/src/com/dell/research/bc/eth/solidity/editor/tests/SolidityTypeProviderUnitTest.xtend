@@ -59,7 +59,7 @@ class SolidityTypeProviderUnitTest {
         (s as ExpressionStatement).expression.typeFor
     }
     
-    @Test def void newType() { "new N".assertType("N") }
+    @Test def void newType() { "new N()".assertType("N") }
 
     @Test def void booleanConstTrueType() { "true".assertType("booleanType") }
 

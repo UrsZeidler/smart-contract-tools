@@ -355,7 +355,7 @@ SignExpression:
     signOp=("+" | "-") expression=UnaryExpression;
 
 NewExpression:
-    "new" contract=[ContractOrLibrary];
+    "new" contract=[ContractOrLibrary] args=FunctionCallListArguments;
 
 PreExpression returns Expression:
     PostIncDecExpression |
