@@ -272,11 +272,10 @@ PlaceHolderStatement:
     "_" {PlaceHolderStatement};
 
 Expression:
-    SpecialExpression |
     Assignment
      ;
 
-SpecialExpression:
+SpecialExpression  :
  type=SpecialExpressionTypeEnum fieldOrMethod=Field? qualifiers+=(Index |Arguments)*
 ;
 
@@ -366,6 +365,7 @@ PostIncDecExpression returns Expression:
     PrimaryExpression ({PostIncDecExpression.expression=current} postOp=IncDecOpEnum)*;
 
 PrimaryExpression returns Expression:
+	SpecialExpression |
     QualifiedIdentifier |
     Literal |
     TypeCast |
