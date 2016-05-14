@@ -35,6 +35,8 @@ import org.eclipse.swt.SWT
 import org.eclipse.swt.graphics.RGB
 import org.eclipse.xtext.ui.editor.utils.TextStyle
 import org.eclipse.xtext.ui.label.DefaultEObjectLabelProvider
+import com.dell.research.bc.eth.solidity.editor.SolidityUtil
+import com.dell.research.bc.eth.solidity.editor.solidity.VisibilityEnum
 
 /**
  * Provides labels for EObjects.
@@ -209,11 +211,43 @@ class SolidityLabelProvider extends DefaultEObjectLabelProvider {
     }
     
     def image(StandardVariableDeclaration svd) {
-        'field_public_obj.png'
+    	var vk = SolidityUtil.toVisiblilityKind(svd)
+    	switch (vk) {
+    		case VisibilityEnum::PUBLIC: {
+    			return 'field_public_obj.png'
+    		}
+    		case VisibilityEnum::INTERNAL: {
+    			return 'field_protected_obj.png'
+    		}
+    		case VisibilityEnum::EXTERNAL: {
+    			return 'field_default_obj.png'
+    		}
+    		case VisibilityEnum::PRIVATE: {
+    			return 'field_private_obj.png'
+    		}
+    	}
+    	
+//        'field_public_obj.png'
     }
     
     def image(FunctionDefinition fd) {
-        'methpub_obj.png'
+    	var vk = SolidityUtil.toVisiblilityKind(fd)
+    	switch (vk) {
+    		case VisibilityEnum::PUBLIC: {
+    			return 'methpub_obj.png'
+    		}
+    		case VisibilityEnum::INTERNAL: {
+    			return 'methpro_obj.png'
+    		}
+    		case VisibilityEnum::EXTERNAL: {
+    			return 'methdef_obj.png'
+    		}
+    		case VisibilityEnum::PRIVATE: {
+    			return 'methpri_obj.png'
+    		}
+    	}
+    	
+       
     }
 
     def image(Modifier md) {
