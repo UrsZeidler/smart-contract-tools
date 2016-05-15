@@ -424,9 +424,48 @@ class ExpressionTest extends AbsExpressionTest {
 
     // NumberConst
     // --------------------------------------------------------------------
+    // See: https://github.com/ethereum/wiki/wiki/The-Solidity-Programming-Language#simple-types
+    // There are four simple types.  
+    // uint - 256-bit unsigned integer
+    // int  - 256-bit signed integer
+    // real - 256-bit signed fixed point 
+    // bytes32 - 32 bytes (256 bits)
+    
     @Test
-    def void testNumberConst() {
+    def void givenPositiveLiteral_whenParsed_thenParsedValueIsCorrect() {
         '''1'''.assertRepr("1")
+    }
+    
+    // The parenthesis around the "-1" doesn't seem quite right. DAF
+    @Test
+    def void givenNegativeLiteral_whenParsed_thenParsedValueIsCorrect() {
+        '''-1'''.assertRepr("(-1)")
+    }
+    
+    @Test
+    def void givenLiteralZero_whenParsed_thenParsedValueIsCorrect() {
+        '''0'''.assertRepr("0")
+    }
+    
+    // When the built-in xtext terminals are used, literal integers are
+	// represented by EInt, with is a signed Java Integer (2^31).
+	@Test
+	def void givenLargestEInt_whenParsed_thenParsedValueIsCorrect() {
+		'''2147483647'''.assertRepr("2147483647")
+	}
+    
+    // This fails for the built-in xtext terminals DAF
+    @Ignore
+    @Test
+	def void testLargestEIntPlusOneNumberConst() {
+		'''2147483648'''.assertRepr("2147483648")
+	}
+	
+    // This fails for the built-in xtext terminals DAF
+    @Ignore
+    @Test
+    def void testLongNumberConstOrig() {
+        '''1000000000000000'''.assertRepr("1000000000000000")
     }
     
     // StringLiteral
@@ -498,7 +537,7 @@ class ExpressionTest extends AbsExpressionTest {
 //    def assertReprNoValidation(CharSequence input, CharSequence expected) {
 //        embedExpression(input).parse => [
 //            expected.assertEquals(
-//                extractParsedExpression.stringRepr
+//                extractParsedStatement.stringRepr
 //            )
 //        ]
 //    }
