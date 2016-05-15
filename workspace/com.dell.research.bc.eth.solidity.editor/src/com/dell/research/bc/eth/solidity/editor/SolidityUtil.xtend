@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     Daniel Ford, Dell Corporation - initial API and implementation
  *******************************************************************************/
@@ -21,24 +21,23 @@ import com.dell.research.bc.eth.solidity.editor.solidity.StandardVariableDeclara
 import com.dell.research.bc.eth.solidity.editor.solidity.VisibilityEnum
 import com.dell.research.bc.eth.solidity.editor.solidity.VisibilitySpecifier
 import com.google.common.collect.Sets
+import java.util.Collection
 import java.util.Set
 import org.eclipse.emf.ecore.EObject
 
 import static extension org.eclipse.xtext.EcoreUtil2.*
-import java.util.List
-import java.util.Collection
 
 // See page 202 of Xtext book
 class SolidityUtil {
-
-	public static Set<String> MESSAGE_MEMBERS = Sets.newHashSet("sender", "value", "data", "gas", "sig")
-	public static Set<String> TRANSACTION_MEMBERS = Sets.newHashSet("gasprice", "origin")
-	public static Set<String> CURRENTBLOCK_MEMBERS = Sets.newHashSet("coinbase", "difficulty", "gaslimit", "number",
-		"blockhash", "timestamp")
-
-	def static containingSolidity(EObject e) {
-		e.getContainerOfType(typeof(Solidity))
-	}
+	
+	public static Set<String>  MESSAGE_MEMBERS = Sets.newHashSet("sender","value","data","gas","sig") 
+	public static Set<String>  TRANSACTION_MEMBERS = Sets.newHashSet("gasprice","origin") 
+	public static Set<String>  CURRENTBLOCK_MEMBERS = Sets.newHashSet("coinbase","difficulty","gaslimit","number","blockhash","timestamp") 
+	public static Set<String>  ADDRESS_MEMBERS = Sets.newHashSet("balance","send") 
+	
+    def static containingSolidity(EObject e) {
+        e.getContainerOfType(typeof(Solidity))
+    }
 
 	def static returnStatement(FunctionDefinition fd) {
 		fd.block.statements.typeSelect(typeof(ReturnStatement)).head
@@ -64,7 +63,8 @@ class SolidityUtil {
 		val toVisit = <InheritanceSpecifier>newHashSet();
 		toVisit.addAll(cl.inheritanceSpecifiers)
 		val visited = <ContractOrLibrary>newHashSet();
-		// visited.add(cl)
+		//visited.add(cl)
+
 		while (!toVisit.empty) {
 			var is = toVisit.last
 			toVisit.remove(is)
@@ -101,7 +101,7 @@ class SolidityUtil {
 	}
 
 	/**
-	 * Not only returns the visibility kind. Public for default. 
+	 * Returns the visibility kind. Public for default. 
 	 */
 	def static toVisiblilityKind(Collection<VisibilitySpecifier> vs) {
 		if(vs.isEmpty)//public is the default
@@ -109,6 +109,5 @@ class SolidityUtil {
 			
 		return vs.get(0).visibility
 	}
-
 
 } // SolidityUtil
