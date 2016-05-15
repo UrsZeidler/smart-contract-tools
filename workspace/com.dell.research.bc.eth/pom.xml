@@ -363,6 +363,17 @@
 			</activation>
 		</profile>
 
+		<!-- platform-mars -->
+		<profile>
+			<id>platform-mars</id>
+			<activation>
+				<property>
+					<name>platform-version-name</name>
+					<value>mars</value>
+				</property>
+			</activation>
+		</profile>
+
 		<profile>
 			<id>only-eclipse</id>
 			<activation>

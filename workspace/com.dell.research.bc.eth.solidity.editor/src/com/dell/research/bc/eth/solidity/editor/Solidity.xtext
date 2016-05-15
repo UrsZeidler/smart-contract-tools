@@ -15,7 +15,7 @@
 //
 // The terminals for the language are in a related C++ header file
 // See: https://github.com/ethereum/solidity/blob/develop/libsolidity/Token.h
-grammar com.dell.research.bc.eth.solidity.editor.Solidity with org.eclipse.xtext.common.Terminals
+grammar com.dell.research.bc.eth.solidity.editor.Solidity hidden(WS, ML_COMMENT, SL_COMMENT)
 
 generate solidity "http://com.dell.research.bc.eth.solidity.editor/1.0/Solidity"
 import "http://www.eclipse.org/emf/2002/Ecore" as ecore
@@ -24,6 +24,8 @@ Solidity:
     (importDirective+=ImportDirective |
     contract+=Contract |
     library+=Library)*;
+
+
 
 ImportDirective:
     "import" importURI=STRING ";" | 
@@ -272,11 +274,10 @@ PlaceHolderStatement:
     "_" {PlaceHolderStatement};
 
 Expression:
-    SpecialExpression |
     Assignment
      ;
 
-SpecialExpression:
+SpecialExpression  :
  type=SpecialExpressionTypeEnum fieldOrMethod=Field? qualifiers+=(Index |Arguments)*
 ;
 
@@ -366,6 +367,7 @@ PostIncDecExpression returns Expression:
     PrimaryExpression ({PostIncDecExpression.expression=current} postOp=IncDecOpEnum)*;
 
 PrimaryExpression returns Expression:
+	SpecialExpression |
     QualifiedIdentifier |
     Literal |
     TypeCast |
@@ -409,6 +411,19 @@ Now :
 
 SpecialVariables :
 	type=SpecialVariablesTypeEnum "." field=ID qualifiers+=Qualifier*;
+
+terminal ID  		: '^'?('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*;
+terminal INT returns ecore::EBigInteger: ('0'..'9')+;
+terminal STRING	: 
+			'"' ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | !('\\'|'"') )* '"' |
+			"'" ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | !('\\'|"'") )* "'"
+		; 
+terminal ML_COMMENT	: '/*' -> '*/';
+terminal SL_COMMENT 	: '//' !('\n'|'\r')* ('\r'? '\n')?;
+
+terminal WS			: (' '|'\t'|'\r'|'\n')+;
+
+terminal ANY_OTHER: .;
 
     // Enums
 //-----------------------------------------------------------------------------
@@ -487,3 +502,5 @@ enum ReservedWordsEnum:
     AS="as" | CASE="case" | CATCH="catch" | FINAL="final" | LET="let" | MATCH="match" | OF="of" |
     RELOCATABLE="relocatable" | SWITCH="switch" | TRY="try" | TYPE="type" | TYPEOF="typeof" | USING="using" |
     ILLEGAL="ILLEGAL";
+
+

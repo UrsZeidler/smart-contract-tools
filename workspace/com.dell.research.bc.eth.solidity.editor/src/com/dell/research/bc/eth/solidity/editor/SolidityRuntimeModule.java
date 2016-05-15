@@ -11,15 +11,27 @@
 
 package com.dell.research.bc.eth.solidity.editor;
 
+import org.eclipse.xtext.conversion.IValueConverterService;
 import org.eclipse.xtext.parser.antlr.ISyntaxErrorMessageProvider;
 
-import com.dell.research.bc.eth.solidity.editor.SoliditySyntaxErrorMessageProvider;
+import com.dell.research.bc.eth.solidity.editor.conversion.SolidityConversionService;
 
 /**
- * Use this class to register components to be used at runtime / without the Equinox extension registry.
+ * Use this class to register components to be used at runtime / without the
+ * Equinox extension registry.
  */
 public class SolidityRuntimeModule extends com.dell.research.bc.eth.solidity.editor.AbstractSolidityRuntimeModule {
 	public Class<? extends ISyntaxErrorMessageProvider> bindISyntaxErrorMessageProvider() {
-	    return SoliditySyntaxErrorMessageProvider.class;
+		return SoliditySyntaxErrorMessageProvider.class;
 	}
+
+	// This registers our own conversions for transforming literals into
+	// values. For instance, for from strings of digits to BigIntegers
+	// See:
+	// https://eclipse.org/Xtext/documentation/303_runtime_concepts.html#value-
+	@Override
+	public Class<? extends IValueConverterService> bindIValueConverterService() {
+		return SolidityConversionService.class;
+	}
+
 } // SolidityRuntimeModule
