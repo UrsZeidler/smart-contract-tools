@@ -283,7 +283,7 @@ return;
 					(it.expression instanceof VariableDeclarationExpression) &&
 						((it.expression as VariableDeclarationExpression).type instanceof QualifiedIdentifier)
 				].findFirst [
-					(it.expression as VariableDeclarationExpression).variable.name.equals(identifier)
+					(it.expression as VariableDeclarationExpression).variable?.name.equals(identifier)
 				]
 				if (tt != null)
 					t = (tt?.expression as VariableDeclarationExpression).type
