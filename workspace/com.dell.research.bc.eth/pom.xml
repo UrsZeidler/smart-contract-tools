@@ -71,10 +71,10 @@
 	</repositories>
 
 	<modules>
-	    <module>../com.dell.research.bc.eth.ui</module>
-	    <module>../com.dell.research.bc.eth.ui.feature</module>
-	    <module>../com.dell.research.bc.eth.solidity.ui</module>
-	    <module>../com.dell.research.bc.eth.solidity.ui.feature</module>
+		<module>../com.dell.research.bc.eth.ui</module>
+		<module>../com.dell.research.bc.eth.ui.feature</module>
+		<module>../com.dell.research.bc.eth.solidity.ui</module>
+		<module>../com.dell.research.bc.eth.solidity.ui.feature</module>
 		<module>../com.dell.research.bc.eth.solidity.editor</module>
 		<module>../com.dell.research.bc.eth.solidity.editor.feature</module>
 		<module>../com.dell.research.bc.eth.solidity.editor.tests</module>
@@ -122,6 +122,32 @@
 		</testResources>
 
 		<plugins>
+			<!-- Maven Toolchain Plugins -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-toolchains-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>toolchain</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<toolchains>
+						<jdk>
+							<version>1.7</version>
+							<vendor>sun</vendor>
+						</jdk>
+					</toolchains>
+				</configuration>
+			</plugin>
 			<!-- Eclipse Tycho/Maven Plugins -->
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>

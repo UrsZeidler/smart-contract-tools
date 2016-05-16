@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF8"?>
+<!-- need to be placed in the ${user.home}/.m2 directory see: http://maven.apache.org/guides/mini/guide-using-toolchains.html -->
+<toolchains>
+  <!-- JDK toolchains -->
+  <toolchain>
+    <type>jdk</type>
+    <provides>
+      <version>1.7</version>
+      <vendor>sun</vendor>
+    </provides>
+    <configuration>
+      <jdkHome>/opt/jdk1.7.0_51</jdkHome>
+    </configuration>
+  </toolchain>
+  </toolchains>
