@@ -43,6 +43,8 @@ import static com.dell.research.bc.eth.solidity.editor.SolidityUtil.*
 import static extension org.eclipse.xtext.EcoreUtil2.*
 import com.dell.research.bc.eth.solidity.editor.solidity.ForStatement
 import java.util.ArrayList
+import com.dell.research.bc.eth.solidity.editor.solidity.FunctionCallListArguments
+import com.dell.research.bc.eth.solidity.editor.solidity.Index
 
 /**
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#content-assist
@@ -54,7 +56,15 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 	
 	override complete_PrimaryExpression(EObject model, RuleCall ruleCall, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor) {
+		if (model instanceof FunctionCallListArguments) {
+			complete_Arguments(model,ruleCall,context,acceptor)
+			return;
+		}else if (model instanceof Index) {
+			complete_Index(model,ruleCall,context,acceptor)
+			return;
+		}
 		println("complete_PrimaryExpression:" + model + "::" + context.prefix)
+
 
 		fillAllPossibleProposals(model, acceptor, context, context.prefix, false)
 	}
@@ -100,9 +110,10 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 	override complete_Arguments(EObject model, RuleCall ruleCall, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor) {
 
-		if (!hasArgument(context.prefix))
-			return;
-
+//		if (!hasArgument(context.prefix))
+//			return;
+if (!(model instanceof FunctionCallListArguments))
+return;
 		println("complete_Arguments:" + model + "::" + context.prefix)
 		val b = model.getContainerOfType(Block)
 		fillAllFieldsAndMethods(model, acceptor, context, context.prefix)
@@ -120,8 +131,10 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 	override complete_Index(EObject model, RuleCall ruleCall, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor) {
 
-		if (!hasIndex(context.prefix))
-			return;
+if (!(model instanceof Index))
+return;
+//		if (!hasIndex(context.prefix))
+//			return;
 		println("complete_Index:" + model + "::" + context.prefix)
 		fillAllFieldsAndMethods(model, acceptor, context, context.prefix)
 		var b = model.getContainerOfType(Block)
@@ -134,9 +147,9 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 	override completeQualifiedIdentifier_Qualifiers(EObject model, Assignment assignment, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor) {
 
+		println("completeQualifiedIdentifier_Qualifiers:" + model + "::" + context.prefix)
 		if (!hasQualifier(context.prefix))
 			return;
-		println("completeQualifiedIdentifier_Qualifiers:" + model + "::" + context.prefix)
 		if (model instanceof QualifiedIdentifier) {
 			var type1 = model as QualifiedIdentifier
 			var index = type1.qualifiers.indexOf(context.previousModel)
@@ -438,7 +451,8 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 		val allAllField = new HashSet
 		allAllField.addAll(cl.body.variables.filter(StandardVariableDeclaration))
 		ch.forEach [
-			allAllField.addAll(it.body.variables.filter(StandardVariableDeclaration).filter[!isPrivate(it)])
+			if(it.body!=null)
+				allAllField.addAll(it.body.variables.filter(StandardVariableDeclaration).filter[!isPrivate(it)])
 		]
 
 		allAllField
@@ -455,7 +469,8 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 		allStructs.addAll(cl.body.structs)
 
 		ch.forEach [
-			allStructs.addAll(it.body.structs)
+			if(it.body!=null)
+				allStructs.addAll(it.body.structs)
 		]
 		allStructs
 	}
