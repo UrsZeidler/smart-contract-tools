@@ -53,18 +53,17 @@ import com.dell.research.bc.eth.solidity.editor.solidity.Index
 class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 
 	static final String IMG_LOCAL_VAR = 'localvariable_obj.png';
-	
+
 	override complete_PrimaryExpression(EObject model, RuleCall ruleCall, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor) {
 		if (model instanceof FunctionCallListArguments) {
-			complete_Arguments(model,ruleCall,context,acceptor)
+			complete_Arguments(model, ruleCall, context, acceptor)
 			return;
-		}else if (model instanceof Index) {
-			complete_Index(model,ruleCall,context,acceptor)
+		} else if (model instanceof Index) {
+			complete_Index(model, ruleCall, context, acceptor)
 			return;
 		}
 		println("complete_PrimaryExpression:" + model + "::" + context.prefix)
-
 
 		fillAllPossibleProposals(model, acceptor, context, context.prefix, false)
 	}
@@ -77,7 +76,6 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 //
 //		fillAllPossibleProposals(model, acceptor, context, context.prefix, false)
 //	}
-
 	override complete_Assignment(EObject model, RuleCall ruleCall, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor) {
 
@@ -112,8 +110,8 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 
 //		if (!hasArgument(context.prefix))
 //			return;
-if (!(model instanceof FunctionCallListArguments))
-return;
+		if (!(model instanceof FunctionCallListArguments))
+			return;
 		println("complete_Arguments:" + model + "::" + context.prefix)
 		val b = model.getContainerOfType(Block)
 		fillAllFieldsAndMethods(model, acceptor, context, context.prefix)
@@ -131,8 +129,8 @@ return;
 	override complete_Index(EObject model, RuleCall ruleCall, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor) {
 
-if (!(model instanceof Index))
-return;
+		if (!(model instanceof Index))
+			return;
 //		if (!hasIndex(context.prefix))
 //			return;
 		println("complete_Index:" + model + "::" + context.prefix)
@@ -337,10 +335,10 @@ return;
 		statements.filter(StandardVariableDeclaration).forEach [
 			standardVariableDeclaration.add(it)
 		]
-		statements.filter(ForStatement).forEach[
-			 if (it.initExpression instanceof StandardVariableDeclaration) {
-			 	standardVariableDeclaration.add(it.initExpression as StandardVariableDeclaration)
-			 } 			
+		statements.filter(ForStatement).forEach [
+			if (it.initExpression instanceof StandardVariableDeclaration) {
+				standardVariableDeclaration.add(it.initExpression as StandardVariableDeclaration)
+			}
 		]
 		val varVariableDeclaration = new HashSet<VarVariableDeclaration>()
 		statements.filter(ExpressionStatement).filter [
@@ -350,15 +348,18 @@ return;
 		]
 		variableDeclaration.forEach [
 			acceptor.accept(
-				createCompletionProposal(matchingPrefix + it.variable.name, labelProvider.getText(it), labelProvider.getImage(IMG_LOCAL_VAR), context))
+				createCompletionProposal(matchingPrefix + it.variable.name, labelProvider.getText(it),
+					labelProvider.getImage(IMG_LOCAL_VAR), context))
 		]
 		varVariableDeclaration.forEach [
 			acceptor.accept(
-				createCompletionProposal(matchingPrefix + it.variable.name, labelProvider.getText(it), labelProvider.getImage(IMG_LOCAL_VAR), context))
+				createCompletionProposal(matchingPrefix + it.variable.name, labelProvider.getText(it),
+					labelProvider.getImage(IMG_LOCAL_VAR), context))
 		]
 		standardVariableDeclaration.forEach [
 			acceptor.accept(
-				createCompletionProposal(matchingPrefix + it.variable.name, labelProvider.getText(it), labelProvider.getImage(IMG_LOCAL_VAR), context))
+				createCompletionProposal(matchingPrefix + it.variable.name, labelProvider.getText(it),
+					labelProvider.getImage(IMG_LOCAL_VAR), context))
 		]
 	}
 
@@ -378,7 +379,6 @@ return;
 //			}
 //		}
 //	}
-
 	/**
 	 * Fills all proposal types.
 	 */
@@ -451,7 +451,7 @@ return;
 		val allAllField = new HashSet
 		allAllField.addAll(cl.body.variables.filter(StandardVariableDeclaration))
 		ch.forEach [
-			if(it.body!=null)
+			if (it.body != null)
 				allAllField.addAll(it.body.variables.filter(StandardVariableDeclaration).filter[!isPrivate(it)])
 		]
 
@@ -469,7 +469,7 @@ return;
 		allStructs.addAll(cl.body.structs)
 
 		ch.forEach [
-			if(it.body!=null)
+			if (it.body != null)
 				allStructs.addAll(it.body.structs)
 		]
 		allStructs
@@ -485,7 +485,8 @@ return;
 		val allEnums = new HashSet
 		allEnums.addAll(cl.body.enums)
 		ch.forEach [
-			allEnums.addAll(it.body.enums)
+			if (it.body != null)
+				allEnums.addAll(it.body.enums)
 		]
 		allEnums
 	}
@@ -500,7 +501,8 @@ return;
 		val allEvents = new HashSet
 		allEvents.addAll(cl.body.events)
 		ch.forEach [
-			allEvents.addAll(it.body.events)
+			if (it.body != null)
+				allEvents.addAll(it.body.events)
 		]
 		allEvents
 	}
@@ -511,7 +513,6 @@ return;
 	private def fillAllParameters(EObject model, ICompletionProposalAcceptor acceptor, ContentAssistContext context,
 		String matchingPrefix) {
 		val fd = model.getContainerOfType(FunctionDefinition)
-		fd?.parameters.parameters
 		fillAllLocalVariables(fd.parameters?.parameters, acceptor, context, matchingPrefix)
 	}
 
@@ -558,7 +559,7 @@ return;
 			allMethods.addAll(it.body.functions.filter[!isPrivate(it)])
 		]
 		allAllField.forEach [
-			acceptor.accept(createCompletionProposal(matchingPrefix + it.variable.name,  labelProvider.getText(it), // labelProvider.getText(it.variable),
+			acceptor.accept(createCompletionProposal(matchingPrefix + it.variable.name, labelProvider.getText(it), // labelProvider.getText(it.variable),
 			labelProvider.getImage(it), context));
 		]
 		allMethods.forEach [
@@ -588,8 +589,10 @@ return;
 		val allMethods = new HashSet
 
 		ch.forEach [
-			allAllField.addAll(it.body.variables.filter(StandardVariableDeclaration))
-			allMethods.addAll(it.body.functions)
+			if (it.body != null) {
+				allAllField.addAll(it.body.variables.filter(StandardVariableDeclaration))
+				allMethods.addAll(it.body.functions)
+			}
 		]
 
 		allAllField.forEach [
