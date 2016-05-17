@@ -25,7 +25,6 @@ import java.util.Set
 import org.eclipse.emf.ecore.EObject
 
 import static extension org.eclipse.xtext.EcoreUtil2.*
-import java.util.List
 import java.util.Collection
 
 // See page 202 of Xtext book

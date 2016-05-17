@@ -82,7 +82,7 @@ class SolidityTypeProvider {
 			Ether: etherType
 			Time: timeType
 			TypeCast: typeCastType
-			SpecialVariables: specialVariablesType(e as SpecialVariables)
+			SpecialVariables: specialVariablesType(e)
 			Now : intType
 			default: booleanType
 		} // switch
