@@ -6,7 +6,7 @@
     <type>jdk</type>
     <provides>
       <version>1.7</version>
-      <vendor>sun</vendor>
+      <!-- <vendor>sun</vendor> -->
     </provides>
     <configuration>
       <jdkHome>/opt/jdk1.7.0_51</jdkHome>
