@@ -52,6 +52,7 @@
 		<xtend-maven-plugin-version>${xtext-version}</xtend-maven-plugin-version>
 		<exec-maven-plugin-version>1.4.0</exec-maven-plugin-version>
 		<maven-release-plugin-version>2.5.3</maven-release-plugin-version>
+		<maven-compiler-plugin-version>3.1</maven-compiler-plugin-version>
 		<maven-assembly-plugin-version>2.6</maven-assembly-plugin-version>
 		<maven-deploy-plugin-version>2.8.2</maven-deploy-plugin-version>
 		<maven-clean-plugin-version>3.0.0</maven-clean-plugin-version>
@@ -60,6 +61,7 @@
 		<maven-site-plugin-version>3.5.1</maven-site-plugin-version>
 		<maven-install-plugin-version>2.5.2</maven-install-plugin-version>
 		<maven-surefire-plugin-version>2.19.1</maven-surefire-plugin-version>
+		<maven-toolchains-plugin-version>1.1</maven-toolchains-plugin-version>
 
 		<tycho-version>0.25.0</tycho-version>
 		<tycho-extras-version>${tycho-version}</tycho-extras-version>
@@ -71,10 +73,10 @@
 	</repositories>
 
 	<modules>
-	    <module>../com.dell.research.bc.eth.ui</module>
-	    <module>../com.dell.research.bc.eth.ui.feature</module>
-	    <module>../com.dell.research.bc.eth.solidity.ui</module>
-	    <module>../com.dell.research.bc.eth.solidity.ui.feature</module>
+		<module>../com.dell.research.bc.eth.ui</module>
+		<module>../com.dell.research.bc.eth.ui.feature</module>
+		<module>../com.dell.research.bc.eth.solidity.ui</module>
+		<module>../com.dell.research.bc.eth.solidity.ui.feature</module>
 		<module>../com.dell.research.bc.eth.solidity.editor</module>
 		<module>../com.dell.research.bc.eth.solidity.editor.feature</module>
 		<module>../com.dell.research.bc.eth.solidity.editor.tests</module>
@@ -122,6 +124,32 @@
 		</testResources>
 
 		<plugins>
+			<!-- Maven Toolchain Plugins -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin-version}</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-toolchains-plugin</artifactId>
+				<version>${maven-toolchains-plugin-version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>toolchain</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<toolchains>
+						<jdk>
+							<version>${java-version}</version>
+							<!-- <vendor>sun</vendor> -->
+						</jdk>
+					</toolchains>
+				</configuration>
+			</plugin>
 			<!-- Eclipse Tycho/Maven Plugins -->
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
@@ -485,6 +513,25 @@
 												</versionRange>
 												<goals>
 													<goal>clean</goal>
+												</goals>
+											</pluginExecutionFilter>
+											<action>
+												<ignore></ignore>
+											</action>
+										</pluginExecution>
+										<pluginExecution>
+											<pluginExecutionFilter>
+												<groupId>
+													org.apache.maven.plugins
+												</groupId>
+												<artifactId>
+													maven-toolchains-plugin
+												</artifactId>
+												<versionRange>
+													[${maven-toolchains-plugin-version},)
+												</versionRange>
+												<goals>
+													<goal>toolchain</goal>
 												</goals>
 											</pluginExecutionFilter>
 											<action>
