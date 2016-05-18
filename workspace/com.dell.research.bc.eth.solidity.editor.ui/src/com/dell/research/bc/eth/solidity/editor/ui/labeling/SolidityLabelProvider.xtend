@@ -108,11 +108,11 @@ class SolidityLabelProvider extends DefaultEObjectLabelProvider {
                 sb.append("(")
             }
             for (var int i = 0; i < rpl.parameters.size - 1; i++) {
-                sb.append(getText(rpl.parameters.get(i)))
+                sb.append(getText(rpl.parameters.get(i).typeRef))
                 sb.append(", ")
             }
             if (rpl.parameters.size >= 1) {
-                sb.append(getText(rpl.parameters.last()))
+                sb.append(getText(rpl.parameters.last().typeRef))
             }
             if (rpl.parameters.size > 1) {
                 sb.append(")")
@@ -122,8 +122,10 @@ class SolidityLabelProvider extends DefaultEObjectLabelProvider {
     }
 
     def text(ReturnParameterDeclaration rpd) {
-        val StringBuilder sb = new StringBuilder(getText(rpd.typeRef));
-        sb.toString
+        new StyledString(getText(rpd.variable)).append(new StyledString(
+            " : " + getText(rpd.typeRef),
+            StyledString::DECORATIONS_STYLER
+        ))
     }
 
     def text(Modifier md) {
@@ -161,6 +163,7 @@ class SolidityLabelProvider extends DefaultEObjectLabelProvider {
             StyledString::DECORATIONS_STYLER
         ))
     }
+
 
     def text(ElementaryType et) {
         et.name.toString

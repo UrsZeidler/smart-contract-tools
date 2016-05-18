@@ -47,6 +47,8 @@ import com.dell.research.bc.eth.solidity.editor.solidity.FunctionCallListArgumen
 import com.dell.research.bc.eth.solidity.editor.solidity.Index
 import java.util.Set
 import java.util.Collection
+import com.dell.research.bc.eth.solidity.editor.solidity.Variable
+import com.dell.research.bc.eth.solidity.editor.solidity.EnumDefinition
 
 /**
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#content-assist
@@ -55,6 +57,8 @@ import java.util.Collection
 class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 
 	static final String IMG_LOCAL_VAR = 'localvariable_obj.png';
+	static final String IMG_PUBLIC_FIELD = 'field_public_obj.png'
+	static final String IMG_PUBLIC_METHOD = 'methpub_obj.png'
 
 	override complete_PrimaryExpression(EObject model, RuleCall ruleCall, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor) {
@@ -117,8 +121,8 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 		println("complete_Arguments:" + model + "::" + context.prefix)
 		val b = model.getContainerOfType(Block)
 		val allLocals = getAllValidLocalVariables(b, model.getContainerOfType(Statement))
-		
-		fillAllLocalVariables(allLocals, acceptor, context, context.prefix)
+
+		fillAllLocalVariables(allLocals, acceptor, context, context.prefix, IMG_LOCAL_VAR)
 		fillAllParameters(model, acceptor, context, context.prefix)
 		fillAllFieldsAndMethods(model, acceptor, context, context.prefix)
 	}
@@ -141,7 +145,7 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 		fillAllFieldsAndMethods(model, acceptor, context, context.prefix)
 		var b = model.getContainerOfType(Block)
 		if (b != null) {
-			fillAllLocalVariables(b.statements, acceptor, context, context.prefix)
+			fillAllLocalVariables(b.statements, acceptor, context, context.prefix, IMG_LOCAL_VAR)
 			fillAllParameters(model, acceptor, context, context.prefix)
 		}
 	}
@@ -180,7 +184,7 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 
 		val c = getAllAccesibleContractsOrLibraries(model)
 		fillTypes(c, acceptor, context)
-		fillAllInnerTypes(model, acceptor, context, false,context.prefix)
+		fillAllInnerTypes(model, acceptor, context, false, context.prefix)
 	}
 
 	override completeSpecialExpression_FieldOrMethod(EObject model, Assignment assignment, ContentAssistContext context,
@@ -247,8 +251,8 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 		if (t == null) { // check for a local variable
 			var b = model.getContainerOfType(Block)
 			var statement = model.getContainerOfType(Statement)
-			var allLocals =  getAllValidLocalVariables(b,statement)
-			
+			var allLocals = getAllValidLocalVariables(b, statement)
+
 			if (!allLocals.isEmpty) {
 				var tt = allLocals.filter(ExpressionStatement).filter [
 					(it.expression instanceof VariableDeclarationExpression) &&
@@ -258,6 +262,17 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 				]
 				if (tt != null)
 					t = (tt?.expression as VariableDeclarationExpression).type
+
+			}
+		}
+		if (t == null) { // check for a parameter
+			var epara = getAllParameters(model).filter(Variable).findFirst [
+				it.name.equals(identifier)
+			]
+			if (epara != null) {
+				if (epara.eContainer instanceof StandardVariableDeclaration) {
+					t = (epara.eContainer as StandardVariableDeclaration).type
+				}
 			}
 		}
 
@@ -291,14 +306,20 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 		]
 		if (etype != null)
 			return etype
+
 	}
 
 	/**
 	 * Fill all variables defined in the given block. 
 	 */
 	def private fillAllLocalVariables(Collection<? super Statement> statements, ICompletionProposalAcceptor acceptor,
-		ContentAssistContext context, String matchingPrefix) {
-					
+		ContentAssistContext context, String matchingPrefix, String imageUrl) {
+		var mp = matchingPrefix
+		if (!hasQualifier(mp))
+			mp = ""
+
+		val mpv = mp
+
 		val variableDeclaration = new HashSet<VariableDeclarationExpression>()
 		statements.filter(ExpressionStatement).filter [
 			it.expression instanceof VariableDeclarationExpression
@@ -321,22 +342,23 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 			varVariableDeclaration.add(it.expression as VarVariableDeclaration)
 		]
 		variableDeclaration.forEach [
-//			if(it.variable != null && it.variable.name.startsWith(matchingPrefix))			
-			acceptor.accept(
-				createCompletionProposal(matchingPrefix+it.variable.name, labelProvider.getText(it),
-					labelProvider.getImage(IMG_LOCAL_VAR), context))
+			if ((it.variable != null && it.variable.name.startsWith(mpv)) || hasQualifier(matchingPrefix))
+				acceptor.accept(
+					createCompletionProposal(mpv + it.variable.name, labelProvider.getText(it),
+						labelProvider.getImage(imageUrl), context))
 		]
 		varVariableDeclaration.forEach [
-//			if(it.variable != null && it.variable.name.startsWith(matchingPrefix))
-			acceptor.accept(
-				createCompletionProposal(matchingPrefix+it.variable.name, labelProvider.getText(it),
-					labelProvider.getImage(IMG_LOCAL_VAR), context))
+			if ((it.variable != null && it.variable.name.startsWith(mpv)) || hasQualifier(matchingPrefix))
+				acceptor.accept(
+					createCompletionProposal(mpv + it.variable.name, labelProvider.getText(it),
+						labelProvider.getImage(imageUrl), context))
 		]
 		standardVariableDeclaration.forEach [
-			acceptor.accept(
-//				if(it.variable != null && it.variable.name.startsWith(matchingPrefix))
-				createCompletionProposal(matchingPrefix+  it.variable.name, labelProvider.getText(it),
-					labelProvider.getImage(IMG_LOCAL_VAR), context))
+			
+			if ((it.variable != null && it.variable.name.startsWith(mpv)) || hasQualifier(matchingPrefix))
+				acceptor.accept(
+					createCompletionProposal(mpv + it.variable.name, labelProvider.getText(it),
+						labelProvider.getImage(imageUrl), context))
 		]
 	}
 
@@ -376,8 +398,8 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 			statement = model.getContainerOfType(Statement)
 		}
 
-		var allLocalVariables = getAllValidLocalVariables(block,statement)
-		fillAllLocalVariables(allLocalVariables, acceptor, context, context.prefix)
+		var allLocalVariables = getAllValidLocalVariables(block, statement)
+		fillAllLocalVariables(allLocalVariables, acceptor, context, context.prefix, IMG_LOCAL_VAR)
 
 		val c = getAllAccesibleContractsOrLibraries(model)
 		fillAllParameters(model, acceptor, context, context.prefix)
@@ -393,18 +415,33 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 	 */
 	private def fillForResolvedType(EObject t, ICompletionProposalAcceptor acceptor, ContentAssistContext context,
 		String matchingPrefix) {
+		var mp = matchingPrefix
+		if (!hasQualifier(mp))
+			mp = ""
+
+		val mpv = mp
+
 		if (t instanceof Contract) {
 			fillAllFieldsAndMethods(t, acceptor, context, matchingPrefix)
 		} else if (t instanceof Library) {
 			fillAllFieldsAndMethods(t, acceptor, context, matchingPrefix)
 		} else if (t instanceof StructDefinition) {
-			fillAllLocalVariables((t as StructDefinition).members, acceptor, context, matchingPrefix)
+			fillAllLocalVariables((t as StructDefinition).members, acceptor, context, matchingPrefix, IMG_PUBLIC_FIELD)
+		} else if (t instanceof EnumDefinition) {
+			(t as EnumDefinition).members.forEach [
+				if ((it.name != null && it.name.startsWith(mpv)) || hasQualifier(matchingPrefix))
+					acceptor.accept(
+						createCompletionProposal(mpv + it.name, labelProvider.getText(it), labelProvider.getImage(it),
+							context))
+			]
 		} else if (t instanceof ElementaryType) {
 			var e = (t as ElementaryType)
 			switch (e.name) {
 				case ADDRESS: {
 					SolidityUtil.ADDRESS_MEMBERS.forEach [
-						acceptor.accept(createCompletionProposal(matchingPrefix + it, it, null, context))
+						acceptor.accept(
+							createCompletionProposal(matchingPrefix + it, it, labelProvider.getImage(IMG_PUBLIC_METHOD),
+								context))
 					]
 				}
 				default: {
@@ -412,7 +449,6 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 			}
 		}
 	}
-
 
 	/**
 	 * Fills the types.
@@ -431,7 +467,22 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 	private def fillAllParameters(EObject model, ICompletionProposalAcceptor acceptor, ContentAssistContext context,
 		String matchingPrefix) {
 		val fd = model.getContainerOfType(FunctionDefinition)
-		fillAllLocalVariables(fd.parameters?.parameters, acceptor, context, matchingPrefix)
+		fillAllLocalVariables(fd.parameters?.parameters, acceptor, context, matchingPrefix, IMG_LOCAL_VAR)
+
+		if (fd.returnParameters != null) {
+			var mp = matchingPrefix
+			if (!hasQualifier(mp))
+				mp = ""
+
+			val mpv = mp
+			fd.returnParameters?.parameters?.forEach [
+				if ((it.variable != null && it.variable.name.startsWith(mpv)) || hasQualifier(matchingPrefix))
+					acceptor.accept(
+						createCompletionProposal(matchingPrefix + it.variable.name, labelProvider.getText(it),
+							labelProvider.getImage(IMG_LOCAL_VAR), context))
+
+			]
+		}
 	}
 
 	/**
@@ -443,222 +494,261 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 		val allEnums = getAllEnums(model)
 		val allEvents = getAllEvents(model)
 
+		var mp = startText
+		if (!hasQualifier(mp))
+			mp = ""
+
+		val mpv = mp
+
 		allStructs.forEach [
-			if(it.name.startsWith(startText))
-			
-			acceptor.accept(
-				createCompletionProposal(it.name, labelProvider.getText(it), labelProvider.getImage(it), context));
+			if (it.name.startsWith(mpv))
+				acceptor.accept(
+					createCompletionProposal(it.name, labelProvider.getText(it), labelProvider.getImage(it), context));
 		]
 		allEnums.forEach [
-			if(it.name.startsWith(startText))
-			acceptor.accept(
-				createCompletionProposal(it.name, labelProvider.getText(it), labelProvider.getImage(it), context));
+			if (it.name.startsWith(mpv))
+				acceptor.accept(
+					createCompletionProposal(it.name, labelProvider.getText(it), labelProvider.getImage(it), context));
 		]
 		if (includeEvents) {
 			allEvents.forEach [
-				if(it.name.startsWith(startText))
+				if (it.name.startsWith(mpv))
+					acceptor.accept(
+						createCompletionProposal(it.name, labelProvider.getText(it), labelProvider.getImage(it),
+							context));
+				]
+			}
+		}
+
+		/**
+		 * Add the inner types as proposal.
+		 */
+		private def fillAllInnerTypes(EObject model, ICompletionProposalAcceptor acceptor, ContentAssistContext context,
+			boolean includeEvents) {
+			val allStructs = getAllStructs(model)
+			val allEnums = getAllEnums(model)
+			val allEvents = getAllEvents(model)
+
+			allStructs.forEach [
 				acceptor.accept(
 					createCompletionProposal(it.name, labelProvider.getText(it), labelProvider.getImage(it), context));
 			]
-		}
-	}
-
-	/**
-	 * Add the inner types as proposal.
-	 */
-	private def fillAllInnerTypes(EObject model, ICompletionProposalAcceptor acceptor, ContentAssistContext context,
-		boolean includeEvents) {
-		val allStructs = getAllStructs(model)
-		val allEnums = getAllEnums(model)
-		val allEvents = getAllEvents(model)
-
-		allStructs.forEach [
-			acceptor.accept(
-				createCompletionProposal(it.name, labelProvider.getText(it), labelProvider.getImage(it), context));
-		]
-		allEnums.forEach [
-			acceptor.accept(
-				createCompletionProposal(it.name, labelProvider.getText(it), labelProvider.getImage(it), context));
-		]
-		if (includeEvents) {
-			allEvents.forEach [
+			allEnums.forEach [
 				acceptor.accept(
 					createCompletionProposal(it.name, labelProvider.getText(it), labelProvider.getImage(it), context));
 			]
+			if (includeEvents) {
+				allEvents.forEach [
+					acceptor.accept(
+						createCompletionProposal(it.name, labelProvider.getText(it), labelProvider.getImage(it),
+							context));
+					]
+				}
+			}
+
+			/**
+			 * Fills all the not private members of the ContractOrLibrary containing the model.
+			 */
+			private def fillAllFieldsAndMethods(EObject model, ICompletionProposalAcceptor acceptor,
+				ContentAssistContext context, String matchingPrefix) {
+				var cl = model.getContainerOfType(ContractOrLibrary)
+				var ch = classHierarchy(cl)
+
+				val allAllField = new HashSet
+				val allMethods = new HashSet
+
+				allAllField.addAll(cl.body?.variables.filter(StandardVariableDeclaration))
+				allMethods.addAll(cl.body?.functions)
+				ch.forEach [
+					allAllField.addAll(it.body?.variables.filter(StandardVariableDeclaration).filter[!isPrivate(it)])
+					allMethods.addAll(it.body?.functions.filter[!isPrivate(it)])
+				]
+
+				var mp = matchingPrefix
+				if (!hasQualifier(mp))
+					mp = ""
+
+				val mpv = mp
+
+				allAllField.forEach [
+					if ((it.variable != null && it.variable.name.startsWith(mpv)) || hasQualifier(matchingPrefix))
+						acceptor.accept(
+							createCompletionProposal(mpv + it.variable.name, labelProvider.getText(it),
+								labelProvider.getImage(it), context));
+				]
+				allMethods.forEach [
+					if ((it != null && it.name !=null && it.name.startsWith(mpv)) || hasQualifier(matchingPrefix))
+						acceptor.accept(
+							createCompletionProposal(mpv + it.name + "()", labelProvider.getText(it),
+								labelProvider.getImage(it), context));
+				]
+			}
+
+			/**
+			 * Returns all defined in and out parameters.
+			 */
+			private def Collection<Variable> getAllParameters(EObject model) {
+				val parameters = new HashSet
+
+				var fd = model.getContainerOfType(FunctionDefinition)
+				if (fd != null) {
+					fd.parameters?.parameters?.filter(VariableDeclarationExpression).forEach [
+						parameters.add(it.variable)
+					]
+					fd.parameters?.parameters?.filter(StandardVariableDeclaration).forEach [
+						parameters.add(it.variable)
+					]
+
+					fd.returnParameters?.parameters?.forEach [
+						parameters.add(it.variable)
+					]
+				}
+				return parameters
+			}
+
+			/**
+			 * Get all accessible contacts.  
+			 */
+			private def getAllAccesibleContractsOrLibraries(EObject model) {
+				model.resourceSet.allContents.filter(ContractOrLibrary)
+			// TODO: this need to be filtered by the import statements
+			}
+
+			/**
+			 * Returns all field defined by the type or the super types.
+			 */
+			private def getAllFields(EObject model) {
+				var cl = model.getContainerOfType(ContractOrLibrary)
+				var ch = classHierarchy(cl)
+
+				val allAllField = new HashSet
+				allAllField.addAll(cl.body.variables.filter(StandardVariableDeclaration))
+				ch.forEach [
+					if (it.body != null)
+						allAllField.addAll(it.body.variables.filter(StandardVariableDeclaration).filter[!isPrivate(it)])
+				]
+
+				allAllField
+			}
+
+			/**
+			 * Returns all structs defined by the type or the super types.
+			 */
+			private def getAllStructs(EObject model) {
+				var cl = model.getContainerOfType(ContractOrLibrary)
+				var ch = classHierarchy(cl)
+
+				val allStructs = new HashSet
+				allStructs.addAll(cl.body.structs)
+
+				ch.forEach [
+					if (it.body != null)
+						allStructs.addAll(it.body.structs)
+				]
+				allStructs
+			}
+
+			/**
+			 * Returns all enums defined by the type or the super types.
+			 */
+			private def getAllEnums(EObject model) {
+				var cl = model.getContainerOfType(ContractOrLibrary)
+				var ch = classHierarchy(cl)
+
+				val allEnums = new HashSet
+				allEnums.addAll(cl.body.enums)
+				ch.forEach [
+					if (it.body != null)
+						allEnums.addAll(it.body.enums)
+				]
+				allEnums
+			}
+
+			/**
+			 * Returns all events defined by the type or the super types.
+			 */
+			private def getAllEvents(EObject model) {
+				var cl = model.getContainerOfType(ContractOrLibrary)
+				var ch = classHierarchy(cl)
+
+				val allEvents = new HashSet
+				allEvents.addAll(cl.body.events)
+				ch.forEach [
+					if (it.body != null)
+						allEvents.addAll(it.body.events)
+				]
+				allEvents
+			}
+
+			/**
+			 * Get all the local variables defined 
+			 */
+			private def Set<? super Statement> getAllValidLocalVariables(Block s_block, Statement s_statement) {
+				var Block block = s_block
+				var Statement statement = s_statement
+				val Set<? super Statement> r_statements = new HashSet<Statement>
+
+				while (block != null) {
+					var index = block.statements.indexOf(statement)
+					var List<? super Statement> statements = new ArrayList(block.statements)
+					if (index != -1) {
+						statements = block.statements.subList(0, index)
+					}
+					if (block.eContainer instanceof ForStatement) {
+						statements.add((block.eContainer as ForStatement))
+					}
+
+					statements.forEach [
+						r_statements.add(it as Statement)
+					]
+
+					var b1 = block.eContainer.getContainerOfType(Block)
+					if (b1 != null) { // move the blocks upward to collect the other lv
+						block = b1
+						statement = null
+					} else {
+						block = null;
+					}
+				}
+				return r_statements
+			}
+
+			/**
+			 * Added all fields and methods for the this expression.
+			 */
+			private def completeThisExpression_FieldOrMethod(EObject model, Assignment assignment,
+				ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
+				fillAllFieldsAndMethods(model, acceptor, context, ".")
+			}
+
+			/**
+			 * Added the fields and methods for the super expression.
+			 */
+			private def completeSuperExpression_FieldOrMethod(EObject model, Assignment assignment,
+				ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
+				var cl = model.getContainerOfType(ContractOrLibrary)
+				var ch = classHierarchy(cl)
+
+				val allAllField = new HashSet
+				val allMethods = new HashSet
+
+				ch.forEach [
+					if (it.body != null) {
+						allAllField.addAll(it.body.variables.filter(StandardVariableDeclaration))
+						allMethods.addAll(it.body.functions)
+					}
+				]
+
+				allAllField.forEach [
+					acceptor.accept(
+						createCompletionProposal("." + it.variable.name, labelProvider.getText(it.variable),
+							labelProvider.getImage(it), context));
+				]
+				allMethods.forEach [
+					acceptor.accept(
+						createCompletionProposal("." + it.name, labelProvider.getText(it), labelProvider.getImage(it),
+							context));
+				]
+			}
 		}
-	}
-
-	/**
-	 * Fills all the not private members of the ContractOrLibrary containing the model.
-	 */
-	private def fillAllFieldsAndMethods(EObject model, ICompletionProposalAcceptor acceptor,
-		ContentAssistContext context, String matchingPrefix) {
-		var cl = model.getContainerOfType(ContractOrLibrary)
-		var ch = classHierarchy(cl)
-
-		val allAllField = new HashSet
-		val allMethods = new HashSet
-
-		allAllField.addAll(cl.body.variables.filter(StandardVariableDeclaration))
-		allMethods.addAll(cl.body.functions)
-		ch.forEach [
-			allAllField.addAll(it.body.variables.filter(StandardVariableDeclaration).filter[!isPrivate(it)])
-			allMethods.addAll(it.body.functions.filter[!isPrivate(it)])
-		]
-		allAllField.forEach [
-			acceptor.accept(createCompletionProposal(matchingPrefix + it.variable.name, labelProvider.getText(it), 
-			labelProvider.getImage(it), context));
-		]
-		allMethods.forEach [
-			acceptor.accept(
-				createCompletionProposal(matchingPrefix + it.name + "()", labelProvider.getText(it),
-					labelProvider.getImage(it), context));
-		]
-	}
-
-	/**
-	 * Get all accessible contacts.  
-	 */
-	private def getAllAccesibleContractsOrLibraries(EObject model) {
-		model.resourceSet.allContents.filter(ContractOrLibrary)
-	// TODO: this need to be filtered by the import statements
-	}
-
-	/**
-	 * Returns all field defined by the type or the super types.
-	 */
-	private def getAllFields(EObject model) {
-		var cl = model.getContainerOfType(ContractOrLibrary)
-		var ch = classHierarchy(cl)
-
-		val allAllField = new HashSet
-		allAllField.addAll(cl.body.variables.filter(StandardVariableDeclaration))
-		ch.forEach [
-			if (it.body != null)
-				allAllField.addAll(it.body.variables.filter(StandardVariableDeclaration).filter[!isPrivate(it)])
-		]
-
-		allAllField
-	}
-
-	/**
-	 * Returns all structs defined by the type or the super types.
-	 */
-	private def getAllStructs(EObject model) {
-		var cl = model.getContainerOfType(ContractOrLibrary)
-		var ch = classHierarchy(cl)
-
-		val allStructs = new HashSet
-		allStructs.addAll(cl.body.structs)
-
-		ch.forEach [
-			if (it.body != null)
-				allStructs.addAll(it.body.structs)
-		]
-		allStructs
-	}
-
-	/**
-	 * Returns all enums defined by the type or the super types.
-	 */
-	private def getAllEnums(EObject model) {
-		var cl = model.getContainerOfType(ContractOrLibrary)
-		var ch = classHierarchy(cl)
-
-		val allEnums = new HashSet
-		allEnums.addAll(cl.body.enums)
-		ch.forEach [
-			if (it.body != null)
-				allEnums.addAll(it.body.enums)
-		]
-		allEnums
-	}
-
-	/**
-	 * Returns all events defined by the type or the super types.
-	 */
-	private def getAllEvents(EObject model) {
-		var cl = model.getContainerOfType(ContractOrLibrary)
-		var ch = classHierarchy(cl)
-
-		val allEvents = new HashSet
-		allEvents.addAll(cl.body.events)
-		ch.forEach [
-			if (it.body != null)
-				allEvents.addAll(it.body.events)
-		]
-		allEvents
-	}
-
-	/**
-	 * Get all the local variables defined 
-	 */
-	private def Set<? super Statement> getAllValidLocalVariables(Block s_block, Statement s_statement) {
-		var Block block = s_block
-		var Statement statement = s_statement
-		val Set<? super Statement> r_statements = new HashSet<Statement>
-
-		while (block != null) {
-			var index = block.statements.indexOf(statement)
-			var List<? super Statement> statements = new ArrayList(block.statements)
-			if (index != -1) {
-				statements = block.statements.subList(0, index)
-			}
-			if (block.eContainer instanceof ForStatement) {
-				statements.add((block.eContainer as ForStatement))
-			}
-
-			statements.forEach[
-				r_statements.add(it as Statement)				
-			]
-
-			var b1 = block.eContainer.getContainerOfType(Block)
-			if (b1 != null) { // move the blocks upward to collect the other lv
-				block = b1
-				statement = null
-			} else {
-				block = null;
-			}
-		}
-		return r_statements
-	}
-
-	/**
-	 * Added all fields and methods for the this expression.
-	 */
-	private def completeThisExpression_FieldOrMethod(EObject model, Assignment assignment, ContentAssistContext context,
-		ICompletionProposalAcceptor acceptor) {
-		fillAllFieldsAndMethods(model, acceptor, context, ".")
-	}
-
-	/**
-	 * Added the fields and methods for the super expression.
-	 */
-	private def completeSuperExpression_FieldOrMethod(EObject model, Assignment assignment,
-		ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
-		var cl = model.getContainerOfType(ContractOrLibrary)
-		var ch = classHierarchy(cl)
-
-		val allAllField = new HashSet
-		val allMethods = new HashSet
-
-		ch.forEach [
-			if (it.body != null) {
-				allAllField.addAll(it.body.variables.filter(StandardVariableDeclaration))
-				allMethods.addAll(it.body.functions)
-			}
-		]
-
-		allAllField.forEach [
-			acceptor.accept(
-				createCompletionProposal("." + it.variable.name, labelProvider.getText(it.variable),
-					labelProvider.getImage(it), context));
-		]
-		allMethods.forEach [
-			acceptor.accept(
-				createCompletionProposal("." + it.name, labelProvider.getText(it), labelProvider.getImage(it),
-					context));
-			]
-		}
-	}
-	
+		
