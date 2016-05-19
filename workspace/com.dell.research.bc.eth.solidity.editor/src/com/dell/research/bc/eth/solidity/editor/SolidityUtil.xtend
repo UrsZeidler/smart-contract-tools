@@ -7,6 +7,7 @@
  * 
  * Contributors:
  *     Daniel Ford, Dell Corporation - initial API and implementation
+ * 	   Urs Zeidler
  *******************************************************************************/
 package com.dell.research.bc.eth.solidity.editor
 
