@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors:
  *     Daniel Ford, Dell Corporation - initial API and implementation
  *******************************************************************************/
@@ -26,18 +26,22 @@ import java.util.Set
 import org.eclipse.emf.ecore.EObject
 
 import static extension org.eclipse.xtext.EcoreUtil2.*
+import java.util.HashSet
+import com.dell.research.bc.eth.solidity.editor.solidity.VariableDeclarationExpression
+import com.dell.research.bc.eth.solidity.editor.solidity.Variable
 
 // See page 202 of Xtext book
 class SolidityUtil {
-	
-	public static Set<String>  MESSAGE_MEMBERS = Sets.newHashSet("sender","value","data","gas","sig") 
-	public static Set<String>  TRANSACTION_MEMBERS = Sets.newHashSet("gasprice","origin") 
-	public static Set<String>  CURRENTBLOCK_MEMBERS = Sets.newHashSet("coinbase","difficulty","gaslimit","number","blockhash","timestamp") 
-	public static Set<String>  ADDRESS_MEMBERS = Sets.newHashSet("balance","send") 
-	
-    def static containingSolidity(EObject e) {
-        e.getContainerOfType(typeof(Solidity))
-    }
+
+	public static Set<String> MESSAGE_MEMBERS = Sets.newHashSet("sender", "value", "data", "gas", "sig")
+	public static Set<String> TRANSACTION_MEMBERS = Sets.newHashSet("gasprice", "origin")
+	public static Set<String> CURRENTBLOCK_MEMBERS = Sets.newHashSet("coinbase", "difficulty", "gaslimit", "number",
+		"blockhash", "timestamp")
+	public static Set<String> ADDRESS_MEMBERS = Sets.newHashSet("balance", "send")
+
+	def static containingSolidity(EObject e) {
+		e.getContainerOfType(typeof(Solidity))
+	}
 
 	def static returnStatement(FunctionDefinition fd) {
 		fd.block.statements.typeSelect(typeof(ReturnStatement)).head
@@ -63,8 +67,7 @@ class SolidityUtil {
 		val toVisit = <InheritanceSpecifier>newHashSet();
 		toVisit.addAll(cl.inheritanceSpecifiers)
 		val visited = <ContractOrLibrary>newHashSet();
-		//visited.add(cl)
-
+		// visited.add(cl)
 		while (!toVisit.empty) {
 			var is = toVisit.last
 			toVisit.remove(is)
@@ -95,7 +98,7 @@ class SolidityUtil {
 	def static toVisiblilityKind(FunctionDefinition fd) {
 		return toVisiblilityKind(fd.optionalElements.filter(VisibilitySpecifier).toList)
 	}
-	
+
 	def static toVisiblilityKind(StandardVariableDeclaration vd) {
 		return toVisiblilityKind(vd.optionalElements.filter(VisibilitySpecifier).toList)
 	}
@@ -104,10 +107,106 @@ class SolidityUtil {
 	 * Returns the visibility kind. Public for default. 
 	 */
 	def static toVisiblilityKind(Collection<VisibilitySpecifier> vs) {
-		if(vs.isEmpty)//public is the default
+		if (vs.isEmpty) // public is the default
 			return VisibilityEnum::PUBLIC
-			
+
 		return vs.get(0).visibility
+	}
+
+	/**
+	 * Returns all defined in and out parameters.
+	 */
+	def static Collection<Variable> getAllParameters(EObject model) {
+		val parameters = new HashSet
+
+		var fd = model.getContainerOfType(FunctionDefinition)
+		if (fd != null) {
+			fd.parameters?.parameters?.filter(VariableDeclarationExpression).forEach [
+				parameters.add(it.variable)
+			]
+			fd.parameters?.parameters?.filter(StandardVariableDeclaration).forEach [
+				parameters.add(it.variable)
+			]
+
+			fd.returnParameters?.parameters?.forEach [
+				parameters.add(it.variable)
+			]
+		}
+		return parameters
+	}
+
+	/**
+	 * Get all accessible contacts.  
+	 */
+	def static getAllAccesibleContractsOrLibraries(EObject model) {
+		model.resourceSet.allContents.filter(ContractOrLibrary)
+	// TODO: this need to be filtered by the import statements
+	}
+
+	/**
+	 * Returns all field defined by the type or the super types.
+	 */
+	def static getAllFields(EObject model) {
+		var cl = model.getContainerOfType(ContractOrLibrary)
+		var ch = classHierarchy(cl)
+
+		val allAllField = new HashSet
+		allAllField.addAll(cl.body.variables.filter(StandardVariableDeclaration))
+		ch.forEach [
+			if (it.body != null)
+				allAllField.addAll(it.body.variables.filter(StandardVariableDeclaration).filter[!isPrivate(it)])
+		]
+
+		allAllField
+	}
+
+	/**
+	 * Returns all structs defined by the type or the super types.
+	 */
+	def static getAllStructs(EObject model) {
+		var cl = model.getContainerOfType(ContractOrLibrary)
+		var ch = classHierarchy(cl)
+
+		val allStructs = new HashSet
+		allStructs.addAll(cl.body.structs)
+
+		ch.forEach [
+			if (it.body != null)
+				allStructs.addAll(it.body.structs)
+		]
+		allStructs
+	}
+
+	/**
+	 * Returns all enums defined by the type or the super types.
+	 */
+	def static getAllEnums(EObject model) {
+		var cl = model.getContainerOfType(ContractOrLibrary)
+		var ch = classHierarchy(cl)
+
+		val allEnums = new HashSet
+		allEnums.addAll(cl.body.enums)
+		ch.forEach [
+			if (it.body != null)
+				allEnums.addAll(it.body.enums)
+		]
+		allEnums
+	}
+
+	/**
+	 * Returns all events defined by the type or the super types.
+	 */
+	def static getAllEvents(EObject model) {
+		var cl = model.getContainerOfType(ContractOrLibrary)
+		var ch = classHierarchy(cl)
+
+		val allEvents = new HashSet
+		allEvents.addAll(cl.body.events)
+		ch.forEach [
+			if (it.body != null)
+				allEvents.addAll(it.body.events)
+		]
+		allEvents
 	}
 
 } // SolidityUtil

@@ -16,19 +16,27 @@ import com.dell.research.bc.eth.solidity.editor.solidity.Block
 import com.dell.research.bc.eth.solidity.editor.solidity.Contract
 import com.dell.research.bc.eth.solidity.editor.solidity.ContractOrLibrary
 import com.dell.research.bc.eth.solidity.editor.solidity.ElementaryType
+import com.dell.research.bc.eth.solidity.editor.solidity.EnumDefinition
 import com.dell.research.bc.eth.solidity.editor.solidity.Expression
 import com.dell.research.bc.eth.solidity.editor.solidity.ExpressionStatement
+import com.dell.research.bc.eth.solidity.editor.solidity.ForStatement
+import com.dell.research.bc.eth.solidity.editor.solidity.FunctionCallListArguments
 import com.dell.research.bc.eth.solidity.editor.solidity.FunctionDefinition
+import com.dell.research.bc.eth.solidity.editor.solidity.Index
 import com.dell.research.bc.eth.solidity.editor.solidity.Library
 import com.dell.research.bc.eth.solidity.editor.solidity.Mapping
 import com.dell.research.bc.eth.solidity.editor.solidity.QualifiedIdentifier
+import com.dell.research.bc.eth.solidity.editor.solidity.Solidity
 import com.dell.research.bc.eth.solidity.editor.solidity.SpecialExpression
 import com.dell.research.bc.eth.solidity.editor.solidity.SpecialVariables
 import com.dell.research.bc.eth.solidity.editor.solidity.StandardVariableDeclaration
 import com.dell.research.bc.eth.solidity.editor.solidity.Statement
 import com.dell.research.bc.eth.solidity.editor.solidity.StructDefinition
 import com.dell.research.bc.eth.solidity.editor.solidity.VarVariableDeclaration
+import com.dell.research.bc.eth.solidity.editor.solidity.Variable
 import com.dell.research.bc.eth.solidity.editor.solidity.VariableDeclarationExpression
+import java.util.ArrayList
+import java.util.Collection
 import java.util.HashSet
 import java.util.Iterator
 import java.util.List
@@ -41,14 +49,6 @@ import org.eclipse.xtext.ui.editor.contentassist.ICompletionProposalAcceptor
 import static com.dell.research.bc.eth.solidity.editor.SolidityUtil.*
 
 import static extension org.eclipse.xtext.EcoreUtil2.*
-import com.dell.research.bc.eth.solidity.editor.solidity.ForStatement
-import java.util.ArrayList
-import com.dell.research.bc.eth.solidity.editor.solidity.FunctionCallListArguments
-import com.dell.research.bc.eth.solidity.editor.solidity.Index
-import java.util.Set
-import java.util.Collection
-import com.dell.research.bc.eth.solidity.editor.solidity.Variable
-import com.dell.research.bc.eth.solidity.editor.solidity.EnumDefinition
 
 /**
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#content-assist
@@ -74,14 +74,6 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 		fillAllPossibleProposals(model, acceptor, context, context.prefix, false)
 	}
 
-//	override complete_ComparisonOpEnum(EObject model, RuleCall ruleCall, ContentAssistContext context,
-//		ICompletionProposalAcceptor acceptor) {
-//		println("complete_ComparisonOpEnum:" + model + "::" + context.prefix)
-//		if (hasQualifier(context.prefix) || hasIndex(context.prefix) || hasArgument(context.prefix))
-//			return;
-//
-//		fillAllPossibleProposals(model, acceptor, context, context.prefix, false)
-//	}
 	override complete_Assignment(EObject model, RuleCall ruleCall, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor) {
 
@@ -102,25 +94,14 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 		fillAllPossibleProposals(model, acceptor, context, context.prefix, false)
 	}
 
-//	override complete_Expression(EObject model, RuleCall ruleCall, ContentAssistContext context,
-//		ICompletionProposalAcceptor acceptor) {
-//		println("complete_Expression:" + model + "::" + context.prefix)
-//	}
-//
-//	override complete_ExpressionStatement(EObject model, RuleCall ruleCall, ContentAssistContext context,
-//		ICompletionProposalAcceptor acceptor) {
-//		println("complete_ExpressionStatement:" + model + "::" + context.prefix)
-//	}
 	override complete_Arguments(EObject model, RuleCall ruleCall, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor) {
 
-//		if (!hasArgument(context.prefix))
-//			return;
 		if (!(model instanceof FunctionCallListArguments))
 			return;
 		println("complete_Arguments:" + model + "::" + context.prefix)
 		val b = model.getContainerOfType(Block)
-		val allLocals = getAllValidLocalVariables(b, model.getContainerOfType(Statement))
+		val allLocals = getAllValidLocalStatements(b, model.getContainerOfType(Statement))
 
 		fillAllLocalVariables(allLocals, acceptor, context, context.prefix, IMG_LOCAL_VAR)
 		fillAllParameters(model, acceptor, context, context.prefix)
@@ -139,8 +120,7 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 
 		if (!(model instanceof Index))
 			return;
-//		if (!hasIndex(context.prefix))
-//			return;
+
 		println("complete_Index:" + model + "::" + context.prefix)
 		fillAllFieldsAndMethods(model, acceptor, context, context.prefix)
 		var b = model.getContainerOfType(Block)
@@ -217,19 +197,6 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 		}
 	}
 
-//	/**
-//	 * Check if the last qualifier is an Index.
-//	 */
-//	private def hasIndex(String prefix) {
-//		return prefix.equals("[")
-//	}
-//
-//	/**
-//	 * Check if the last qualifier is an Arguments.
-//	 */
-//	private def hasArgument(String prefix) {
-//		return prefix.equals("(")
-//	}
 	/**
 	 * Check if the last qualifier is a dot.
 	 */
@@ -251,7 +218,7 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 		if (t == null) { // check for a local variable
 			var b = model.getContainerOfType(Block)
 			var statement = model.getContainerOfType(Statement)
-			var allLocals = getAllValidLocalVariables(b, statement)
+			var allLocals = getAllValidLocalStatements(b, statement)
 
 			if (!allLocals.isEmpty) {
 				var tt = allLocals.filter(ExpressionStatement).filter [
@@ -354,7 +321,6 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 						labelProvider.getImage(imageUrl), context))
 		]
 		standardVariableDeclaration.forEach [
-			
 			if ((it.variable != null && it.variable.name.startsWith(mpv)) || hasQualifier(matchingPrefix))
 				acceptor.accept(
 					createCompletionProposal(mpv + it.variable.name, labelProvider.getText(it),
@@ -362,22 +328,6 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 		]
 	}
 
-//	/**
-//	 * Simple helper.
-//	 */
-//	private def toNameAndType(EObject vd) {
-//		switch (vd) {
-//			VariableDeclarationExpression: {
-//				return vd.variable.name + " : " + labelProvider.getText(vd.type)
-//			}
-//			VarVariableDeclaration: {
-//				return vd.variable.name + " : " + labelProvider.getText(vd.varType)
-//			}
-//			StandardVariableDeclaration: {
-//				return vd.variable.name + " : " + labelProvider.getText(vd.type)
-//			}
-//		}
-//	}
 	/**
 	 * Fills all proposal types.
 	 */
@@ -392,13 +342,13 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 			block = model as Block
 		} else if (model instanceof Statement) {
 			block = model.getContainerOfType(Block)
-			statement = model as Statement
+			statement = findMatchingStatement(block, model)
 		} else if (model instanceof Expression) {
 			block = model.getContainerOfType(Block)
 			statement = model.getContainerOfType(Statement)
 		}
 
-		var allLocalVariables = getAllValidLocalVariables(block, statement)
+		var allLocalVariables = getAllValidLocalStatements(block, statement)
 		fillAllLocalVariables(allLocalVariables, acceptor, context, context.prefix, IMG_LOCAL_VAR)
 
 		val c = getAllAccesibleContractsOrLibraries(model)
@@ -408,6 +358,17 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 			fillTypes(c, acceptor, context)
 			fillAllInnerTypes(model, acceptor, context, true, matchingPrefix)
 		}
+	}
+
+	/**
+	 * Search the next statement (parent) defined in the block. 
+	 */
+	private def Statement findMatchingStatement(Block block, EObject model) {
+		if (block.statements.indexOf(model) != -1)
+			return model as Statement
+		if(model.eContainer == null || model.eContainer instanceof Solidity) return null;
+
+		return findMatchingStatement(block, model.eContainer)
 	}
 
 	/**
@@ -577,7 +538,7 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 								labelProvider.getImage(it), context));
 				]
 				allMethods.forEach [
-					if ((it != null && it.name !=null && it.name.startsWith(mpv)) || hasQualifier(matchingPrefix))
+					if ((it != null && it.name != null && it.name.startsWith(mpv)) || hasQualifier(matchingPrefix))
 						acceptor.accept(
 							createCompletionProposal(mpv + it.name + "()", labelProvider.getText(it),
 								labelProvider.getImage(it), context));
@@ -585,114 +546,18 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 			}
 
 			/**
-			 * Returns all defined in and out parameters.
-			 */
-			private def Collection<Variable> getAllParameters(EObject model) {
-				val parameters = new HashSet
-
-				var fd = model.getContainerOfType(FunctionDefinition)
-				if (fd != null) {
-					fd.parameters?.parameters?.filter(VariableDeclarationExpression).forEach [
-						parameters.add(it.variable)
-					]
-					fd.parameters?.parameters?.filter(StandardVariableDeclaration).forEach [
-						parameters.add(it.variable)
-					]
-
-					fd.returnParameters?.parameters?.forEach [
-						parameters.add(it.variable)
-					]
-				}
-				return parameters
-			}
-
-			/**
-			 * Get all accessible contacts.  
-			 */
-			private def getAllAccesibleContractsOrLibraries(EObject model) {
-				model.resourceSet.allContents.filter(ContractOrLibrary)
-			// TODO: this need to be filtered by the import statements
-			}
-
-			/**
-			 * Returns all field defined by the type or the super types.
-			 */
-			private def getAllFields(EObject model) {
-				var cl = model.getContainerOfType(ContractOrLibrary)
-				var ch = classHierarchy(cl)
-
-				val allAllField = new HashSet
-				allAllField.addAll(cl.body.variables.filter(StandardVariableDeclaration))
-				ch.forEach [
-					if (it.body != null)
-						allAllField.addAll(it.body.variables.filter(StandardVariableDeclaration).filter[!isPrivate(it)])
-				]
-
-				allAllField
-			}
-
-			/**
-			 * Returns all structs defined by the type or the super types.
-			 */
-			private def getAllStructs(EObject model) {
-				var cl = model.getContainerOfType(ContractOrLibrary)
-				var ch = classHierarchy(cl)
-
-				val allStructs = new HashSet
-				allStructs.addAll(cl.body.structs)
-
-				ch.forEach [
-					if (it.body != null)
-						allStructs.addAll(it.body.structs)
-				]
-				allStructs
-			}
-
-			/**
-			 * Returns all enums defined by the type or the super types.
-			 */
-			private def getAllEnums(EObject model) {
-				var cl = model.getContainerOfType(ContractOrLibrary)
-				var ch = classHierarchy(cl)
-
-				val allEnums = new HashSet
-				allEnums.addAll(cl.body.enums)
-				ch.forEach [
-					if (it.body != null)
-						allEnums.addAll(it.body.enums)
-				]
-				allEnums
-			}
-
-			/**
-			 * Returns all events defined by the type or the super types.
-			 */
-			private def getAllEvents(EObject model) {
-				var cl = model.getContainerOfType(ContractOrLibrary)
-				var ch = classHierarchy(cl)
-
-				val allEvents = new HashSet
-				allEvents.addAll(cl.body.events)
-				ch.forEach [
-					if (it.body != null)
-						allEvents.addAll(it.body.events)
-				]
-				allEvents
-			}
-
-			/**
 			 * Get all the local variables defined 
 			 */
-			private def Set<? super Statement> getAllValidLocalVariables(Block s_block, Statement s_statement) {
+			private def Collection<? super Statement> getAllValidLocalStatements(Block s_block, Statement s_statement) {
 				var Block block = s_block
 				var Statement statement = s_statement
-				val Set<? super Statement> r_statements = new HashSet<Statement>
+				val List<? super Statement> r_statements = new ArrayList<Statement>
 
 				while (block != null) {
 					var index = block.statements.indexOf(statement)
 					var List<? super Statement> statements = new ArrayList(block.statements)
 					if (index != -1) {
-						statements = block.statements.subList(0, index)
+						statements = new ArrayList(block.statements.subList(0, index))
 					}
 					if (block.eContainer instanceof ForStatement) {
 						statements.add((block.eContainer as ForStatement))
