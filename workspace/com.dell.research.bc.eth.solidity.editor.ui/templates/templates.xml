@@ -1,3 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates>
+	<template autoinsert="true" id="ForArrary"
+		context="com.dell.research.bc.eth.solidity.editor.Solidity.Statement"
+		deleted="false" description="ForArrary" enabled="true" 
+name="ForArrary">for(${uint} ${i} = 0; ${i} &lt; ${arrayName}.length; ${i}+=1){
+	${type} ${lvar} = ${arrayName}[${i}];
+}</template>
+	<template autoinsert="true" id="For"
+		context="com.dell.research.bc.eth.solidity.editor.Solidity.Statement"
+		deleted="false" description="for variable" enabled="true" 
+name="for">for(${uint} ${i}; ${i} &lt; ${variableMax}; ${i}+=1){
+	${expression}
+}</template>
 </templates>
