@@ -12,4 +12,45 @@ name="ForArrary">for(${uint} ${i} = 0; ${i} &lt; ${arrayName}.length; ${i}+=1){
 name="for">for(${uint} ${i}; ${i} &lt; ${variableMax}; ${i}+=1){
 	${expression}
 }</template>
+<template autoinsert="true" id="contract" context="com.dell.research.bc.eth.solidity.editor.Solidity.Solidity" deleted="false" description="creates a new contract " enabled="true" name="contract">/**&#13;
+*  ${name}&#13;
+*/&#13;
+contract ${name} {&#13;
+	${cursor}&#13;
+	&#13;
+}</template>
+<template autoinsert="true" id="contract-1" context="com.dell.research.bc.eth.solidity.editor.Solidity.ImportDirective" deleted="false" description="creates a new contract " enabled="true" name="contract">/**&#13;
+*  ${name}&#13;
+*/&#13;
+contract ${name} {&#13;
+	${cursor}&#13;
+	&#13;
+}</template>
+<template autoinsert="true" id="public-function" context="com.dell.research.bc.eth.solidity.editor.Solidity.DefinitionBody" deleted="false" description="" enabled="true" name="function">/**&#13;
+*  ${name}&#13;
+*/&#13;
+function ${name}(${args}) public {&#13;
+	${cursor}&#13;
+}</template>
+<template autoinsert="true" id="public-function-1" context="com.dell.research.bc.eth.solidity.editor.Solidity.Block" deleted="false" description="" enabled="true" name="public function">/**&#13;
+*  ${name}&#13;
+*/&#13;
+function ${name}(${args}) public {&#13;
+	${cursor}&#13;
+}</template>
+<template autoinsert="true" id="struct-1" context="com.dell.research.bc.eth.solidity.editor.Solidity.DefinitionBody" deleted="false" description="defines a struct" enabled="true" name="struct">/**&#13;
+*  ${name}&#13;
+*/&#13;
+struct ${name} {&#13;
+	${cursor}&#13;
+	&#13;
+}</template>
+<template autoinsert="true" id="struct-2" context="com.dell.research.bc.eth.solidity.editor.Solidity.StructDefinition" deleted="false" description="defines a struct" enabled="true" name="struct">/**&#13;
+*  ${name}&#13;
+*/&#13;
+struct ${name} {&#13;
+	${cursor}&#13;
+	&#13;
+}</template>
+
 </templates>
