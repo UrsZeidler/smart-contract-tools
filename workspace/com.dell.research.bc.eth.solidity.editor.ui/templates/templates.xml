@@ -1,3 +1,54 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<templates>
-</templates>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><templates><template autoinsert="true" context="com.dell.research.bc.eth.solidity.editor.Solidity.Statement" deleted="false" description="dynamic cast" enabled="true" id="cast" name="cast">${type} ${new_name} = ${type}(${name});</template>
+<template autoinsert="true" context="com.dell.research.bc.eth.solidity.editor.Solidity.Contract" deleted="false" description="defines a new contract " enabled="true" id="contract" name="contract">/**
+*  ${name}
+*/
+contract ${name} {
+	${cursor}	
+}</template><template autoinsert="true" context="com.dell.research.bc.eth.solidity.editor.Solidity.Library" deleted="false" description="defines a new library " enabled="true" id="library" name="library">/**
+*  ${name}
+*/
+library ${name} {
+	${cursor}	
+}</template><template autoinsert="true" context="com.dell.research.bc.eth.solidity.editor.Solidity.Statement" deleted="false" description="for with variable" enabled="true" id="For" name="for">for(${uint} ${i}; ${i} &lt; ${variableMax}; ${i}+=1){
+	${line_selection}${cursor}
+}</template><template autoinsert="true" context="com.dell.research.bc.eth.solidity.editor.Solidity.Statement" deleted="false" description="iterate over array with temporary variable" enabled="true" id="for-array" name="for">for(${uint} ${i} = 0; ${i} &lt; ${array}.length; ${i}+=1){
+	${array_type} ${array_name} = ${array}[${i}];
+	${line_selection}${cursor}
+}</template><template autoinsert="true" context="com.dell.research.bc.eth.solidity.editor.Solidity.Statement" deleted="false" description="if statement" enabled="true" id="if-1" name="if">if (${condition:var(boolean)}) {
+	${line_selection}${cursor}
+}</template><template autoinsert="true" context="com.dell.research.bc.eth.solidity.editor.Solidity.Statement" deleted="false" description="if else statement" enabled="true" id="ifelse" name="ifelse">if (${condition:var(boolean)}) {
+	${line_selection}${cursor}
+} else {
+	
+}</template><template autoinsert="true" context="com.dell.research.bc.eth.solidity.editor.Solidity.Statement" deleted="false" description="create new contract" enabled="true" id="new" name="new">${type} ${name} = new ${type}(${args});</template><template autoinsert="true" context="com.dell.research.bc.eth.solidity.editor.Solidity.FunctionDefinition" deleted="false" description="defines a private function" enabled="true" id="private-function" name="private function">/**
+*  ${name}
+*/
+function ${name}(${args}) private {
+	${cursor}
+}</template><template autoinsert="true" context="com.dell.research.bc.eth.solidity.editor.Solidity.FunctionDefinition" deleted="false" description="defines a public function" enabled="true" id="public-function" name="public function">/**
+*  ${name}
+*/
+function ${name}(${args}) public {
+	${cursor}
+}</template><template autoinsert="true" context="com.dell.research.bc.eth.solidity.editor.Solidity.FunctionDefinition" deleted="false" description="defines a public function with const return" enabled="true" id="public-const-function" name="public const function">/**
+*  ${name}
+*/
+function ${name}(${args}) public constant returns (${return_args}){
+	${cursor}
+	return ${return_expression};
+}</template><template autoinsert="true" context="com.dell.research.bc.eth.solidity.editor.Solidity.FunctionDefinition" deleted="false" description="defines an internal function" enabled="true" id="internal-function" name="internal function">/**
+*  ${name}
+*/
+function ${name}(${args}) internal {
+	${cursor}
+}</template><template autoinsert="true" context="com.dell.research.bc.eth.solidity.editor.Solidity.FunctionDefinition" deleted="false" description="defines an external function" enabled="true" id="external-function" name="external function">/**
+*  ${name}
+*/
+function ${name}(${args}) external {
+	${cursor}
+}</template><template autoinsert="true" context="com.dell.research.bc.eth.solidity.editor.Solidity.StructDefinition" deleted="false" description="defines a struct" enabled="true" id="struct" name="struct">/**
+*  ${name}
+*/
+struct ${name} {
+	${cursor}
+}</template></templates>
