@@ -10,10 +10,12 @@
  *******************************************************************************/
 package com.dell.research.bc.eth.solidity.editor.ui.labeling
 
+import com.dell.research.bc.eth.solidity.editor.SolidityUtil
 import com.dell.research.bc.eth.solidity.editor.solidity.Contract
 import com.dell.research.bc.eth.solidity.editor.solidity.ElementaryType
 import com.dell.research.bc.eth.solidity.editor.solidity.EnumDefinition
 import com.dell.research.bc.eth.solidity.editor.solidity.EnumValue
+import com.dell.research.bc.eth.solidity.editor.solidity.Event
 import com.dell.research.bc.eth.solidity.editor.solidity.FunctionDefinition
 import com.dell.research.bc.eth.solidity.editor.solidity.ImportDirective
 import com.dell.research.bc.eth.solidity.editor.solidity.Library
@@ -27,7 +29,8 @@ import com.dell.research.bc.eth.solidity.editor.solidity.Statement
 import com.dell.research.bc.eth.solidity.editor.solidity.StructDefinition
 import com.dell.research.bc.eth.solidity.editor.solidity.VarVariableDeclaration
 import com.dell.research.bc.eth.solidity.editor.solidity.VarVariableTupleVariableDeclaration
-import com.dell.research.bc.eth.solidity.editor.solidity.Event
+import com.dell.research.bc.eth.solidity.editor.solidity.VariableDeclarationExpression
+import com.dell.research.bc.eth.solidity.editor.solidity.VisibilityEnum
 import com.google.inject.Inject
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider
 import org.eclipse.jface.viewers.StyledString
@@ -35,8 +38,6 @@ import org.eclipse.swt.SWT
 import org.eclipse.swt.graphics.RGB
 import org.eclipse.xtext.ui.editor.utils.TextStyle
 import org.eclipse.xtext.ui.label.DefaultEObjectLabelProvider
-import com.dell.research.bc.eth.solidity.editor.SolidityUtil
-import com.dell.research.bc.eth.solidity.editor.solidity.VisibilityEnum
 
 /**
  * Provides labels for EObjects.
@@ -107,11 +108,11 @@ class SolidityLabelProvider extends DefaultEObjectLabelProvider {
                 sb.append("(")
             }
             for (var int i = 0; i < rpl.parameters.size - 1; i++) {
-                sb.append(getText(rpl.parameters.get(i)))
+                sb.append(getText(rpl.parameters.get(i).typeRef))
                 sb.append(", ")
             }
             if (rpl.parameters.size >= 1) {
-                sb.append(getText(rpl.parameters.last()))
+                sb.append(getText(rpl.parameters.last().typeRef))
             }
             if (rpl.parameters.size > 1) {
                 sb.append(")")
@@ -121,8 +122,10 @@ class SolidityLabelProvider extends DefaultEObjectLabelProvider {
     }
 
     def text(ReturnParameterDeclaration rpd) {
-        val StringBuilder sb = new StringBuilder(getText(rpd.typeRef));
-        sb.toString
+        new StyledString(getText(rpd.variable)).append(new StyledString(
+            " : " + getText(rpd.typeRef),
+            StyledString::DECORATIONS_STYLER
+        ))
     }
 
     def text(Modifier md) {
@@ -146,6 +149,21 @@ class SolidityLabelProvider extends DefaultEObjectLabelProvider {
             StyledString::DECORATIONS_STYLER
         ))
     }
+
+    def text(VarVariableDeclaration svd) {
+        new StyledString(getText(svd.variable)).append(new StyledString(
+            " : " + getText(svd.varType),
+            StyledString::DECORATIONS_STYLER
+        ))
+    }
+
+    def text(VariableDeclarationExpression svd) {
+        new StyledString(getText(svd.variable)).append(new StyledString(
+            " : " + getText(svd.type),
+            StyledString::DECORATIONS_STYLER
+        ))
+    }
+
 
     def text(ElementaryType et) {
         et.name.toString
@@ -190,6 +208,10 @@ class SolidityLabelProvider extends DefaultEObjectLabelProvider {
 
     // Images (found in the "icons" folder
     // ---------------------------------------------------
+    def image(String image){
+    	image
+    }
+    
     def image(Event cd){
     	'event_obj.gif'
     }
