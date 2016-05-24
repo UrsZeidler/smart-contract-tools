@@ -38,8 +38,8 @@ import com.dell.research.bc.eth.solidity.editor.solidity.VariableDeclarationExpr
 import java.util.ArrayList
 import java.util.Collection
 import java.util.HashSet
-import java.util.Iterator
 import java.util.List
+import java.util.Set
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.Assignment
 import org.eclipse.xtext.RuleCall
@@ -60,6 +60,7 @@ import com.dell.research.bc.eth.solidity.editor.solidity.TimeSubdenominationEnum
 import com.dell.research.bc.eth.solidity.editor.solidity.SpecialVariablesTypeEnum
 import com.dell.research.bc.eth.solidity.editor.solidity.SpecialExpressionTypeEnum
 import com.dell.research.bc.eth.solidity.editor.solidity.ReservedWordsEnum
+
 
 /**
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#content-assist
@@ -365,6 +366,7 @@ override completeKeyword(Keyword keyword, ContentAssistContext contentAssistCont
 	 */
 	private def fillAllPossibleProposals(EObject model, ICompletionProposalAcceptor acceptor,
 		ContentAssistContext context, String matchingPrefix, boolean includeTypes) {
+		if(model == null) return;
 		var Block block = null
 		var Statement statement = null
 
@@ -446,7 +448,7 @@ override completeKeyword(Keyword keyword, ContentAssistContext contentAssistCont
 	/**
 	 * Fills the types.
 	 */
-	def private fillTypes(Iterator<ContractOrLibrary> libraries, ICompletionProposalAcceptor acceptor,
+	def private fillTypes(Collection<ContractOrLibrary> libraries, ICompletionProposalAcceptor acceptor,
 		ContentAssistContext context) {
 		libraries.forEach [
 			acceptor.accept(
@@ -460,21 +462,23 @@ override completeKeyword(Keyword keyword, ContentAssistContext contentAssistCont
 	private def fillAllParameters(EObject model, ICompletionProposalAcceptor acceptor, ContentAssistContext context,
 		String matchingPrefix) {
 		val fd = model.getContainerOfType(FunctionDefinition)
-		fillAllLocalVariables(fd.parameters?.parameters, acceptor, context, matchingPrefix, IMG_LOCAL_VAR)
+		if (fd != null) {
+			fillAllLocalVariables(fd.parameters?.parameters, acceptor, context, matchingPrefix, IMG_LOCAL_VAR)
 
-		if (fd.returnParameters != null) {
-			var mp = matchingPrefix
-			if (!hasQualifier(mp))
-				mp = ""
+			if (fd.returnParameters != null) {
+				var mp = matchingPrefix
+				if (!hasQualifier(mp))
+					mp = ""
 
-			val mpv = mp
-			fd.returnParameters?.parameters?.forEach [
-				if ((it.variable != null && it.variable.name.startsWith(mpv)) || hasQualifier(matchingPrefix))
-					acceptor.accept(
-						createCompletionProposal(matchingPrefix + it.variable.name, labelProvider.getText(it),
-							labelProvider.getImage(IMG_LOCAL_VAR), context))
+				val mpv = mp
+				fd.returnParameters?.parameters?.forEach [
+					if ((it.variable != null && it.variable.name.startsWith(mpv)) || hasQualifier(matchingPrefix))
+						acceptor.accept(
+							createCompletionProposal(matchingPrefix + it.variable.name, labelProvider.getText(it),
+								labelProvider.getImage(IMG_LOCAL_VAR), context))
 
-			]
+				]
+			}
 		}
 	}
 
@@ -518,6 +522,8 @@ override completeKeyword(Keyword keyword, ContentAssistContext contentAssistCont
 		 */
 		private def fillAllFieldsAndMethods(EObject model, ICompletionProposalAcceptor acceptor,
 			ContentAssistContext context, String matchingPrefix) {
+			if(model==null)return;
+			 
 			var cl = model.getContainerOfType(ContractOrLibrary)
 			var ch = classHierarchy(cl)
 
@@ -555,9 +561,11 @@ override completeKeyword(Keyword keyword, ContentAssistContext contentAssistCont
 		 * Get all the local variables defined 
 		 */
 		private def Collection<? super Statement> getAllValidLocalStatements(Block s_block, Statement s_statement) {
+			val Set<? super Statement> r_statements = new HashSet<Statement>
+			if(s_block == null) return r_statements;
+
 			var Block block = s_block
 			var Statement statement = s_statement
-			val Set<? super Statement> r_statements = new HashSet<Statement>
 
 			while (block != null) {
 				var index = block.statements.indexOf(statement)

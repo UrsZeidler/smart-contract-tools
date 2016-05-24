@@ -140,7 +140,7 @@ class SolidityUtil {
 	 * Get all accessible contacts.  
 	 */
 	def static getAllAccesibleContractsOrLibraries(EObject model) {
-		model.resourceSet.allContents.filter(ContractOrLibrary)
+		model.resourceSet.allContents.filter(ContractOrLibrary).toList
 	// TODO: this need to be filtered by the import statements
 	}
 
