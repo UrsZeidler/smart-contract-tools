@@ -50,6 +50,16 @@ import static com.dell.research.bc.eth.solidity.editor.SolidityUtil.*
 
 import static extension org.eclipse.xtext.EcoreUtil2.*
 import java.util.Set
+import org.eclipse.xtext.Keyword
+import com.google.common.collect.Sets
+import com.dell.research.bc.eth.solidity.editor.solidity.ElementaryTypeNameEnum
+import com.dell.research.bc.eth.solidity.editor.solidity.LocationSpecifierEnum
+import com.dell.research.bc.eth.solidity.editor.solidity.VisibilityEnum
+import com.dell.research.bc.eth.solidity.editor.solidity.EtherSubDenominationEnum
+import com.dell.research.bc.eth.solidity.editor.solidity.TimeSubdenominationEnum
+import com.dell.research.bc.eth.solidity.editor.solidity.SpecialVariablesTypeEnum
+import com.dell.research.bc.eth.solidity.editor.solidity.SpecialExpressionTypeEnum
+import com.dell.research.bc.eth.solidity.editor.solidity.ReservedWordsEnum
 
 /**
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#content-assist
@@ -60,6 +70,39 @@ class SolidityProposalProvider extends AbstractSolidityProposalProvider {
 	static final String IMG_LOCAL_VAR = 'localvariable_obj.png';
 	static final String IMG_PUBLIC_FIELD = 'field_public_obj.png'
 	static final String IMG_PUBLIC_METHOD = 'methpub_obj.png'
+	
+	static final Set<String> INCLUDE = Sets.newHashSet(ElementaryTypeNameEnum::ADDRESS.literal, 
+		ElementaryTypeNameEnum::INT.literal, ElementaryTypeNameEnum::UINT.literal, ElementaryTypeNameEnum::UINT256.literal, 
+		ElementaryTypeNameEnum::STRING.literal,ElementaryTypeNameEnum::BYTE.literal,ElementaryTypeNameEnum::BYTES32.literal,
+		ElementaryTypeNameEnum::BOOL.literal, ElementaryTypeNameEnum::REAL.literal,
+		"return","public","private","internal","memory","storage"
+	);
+	static final Set<String> EXCLUDE = Sets.newHashSet(ElementaryTypeNameEnum::UINT.literal,ElementaryTypeNameEnum::INT.literal,
+		ElementaryTypeNameEnum::BYTES.literal,ElementaryTypeNameEnum::REAL.literal,ElementaryTypeNameEnum::UREAL.literal
+	);
+
+static final Set<String> INCLUDE_V = Sets.union(
+Sets.union(ReservedWordsEnum.VALUES.map[it.literal].toSet,
+Sets.union(SpecialExpressionTypeEnum.VALUES.map[it.literal].toSet,
+Sets.union(SpecialVariablesTypeEnum.VALUES.map[it.literal].toSet,
+Sets.union(TimeSubdenominationEnum.VALUES.map[it.literal].toSet,
+Sets.union(EtherSubDenominationEnum.VALUES.map[it.literal].toSet,
+Sets.union(VisibilityEnum.VALUES.map[it.literal].toSet,
+	LocationSpecifierEnum.VALUES.map[it.literal].toSet
+))))))
+, Sets.newHashSet(ElementaryTypeNameEnum::ADDRESS.literal, 
+		ElementaryTypeNameEnum::INT.literal, ElementaryTypeNameEnum::UINT.literal, ElementaryTypeNameEnum::UINT256.literal, 
+		ElementaryTypeNameEnum::STRING.literal,ElementaryTypeNameEnum::BYTE.literal,ElementaryTypeNameEnum::BYTES32.literal,
+		ElementaryTypeNameEnum::BOOL.literal, ElementaryTypeNameEnum::REAL.literal,
+		"return"
+	)  //.newHashSet(VisibilityEnum.VALUES.map[it.getName()])
+)	
+
+override completeKeyword(Keyword keyword, ContentAssistContext contentAssistContext,
+			ICompletionProposalAcceptor acceptor) {
+				if(INCLUDE_V.contains(keyword.value))
+					super.completeKeyword(keyword,contentAssistContext,acceptor);
+			}
 
 	override complete_PrimaryExpression(EObject model, RuleCall ruleCall, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor) {
