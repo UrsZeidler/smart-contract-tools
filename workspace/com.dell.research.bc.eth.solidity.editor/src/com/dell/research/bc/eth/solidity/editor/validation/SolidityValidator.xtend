@@ -49,6 +49,7 @@ class SolidityValidator extends AbstractSolidityValidator {
 	public static val DUPLICATE_ELEMENT = "com.dell.research.bc.eth.solidity.editor.DuplicateElement"
 	public static val INCOMPATIBLE_TYPES = "com.dell.research.bc.eth.solidity.editor.IncompatibleTypes"
 	public static val NO_MEMBER = "com.dell.research.bc.eth.solidity.editor.NoMember"
+	public static val UNDEFINE_TYPE = "com.dell.research.bc.eth.solidity.editor.UndefineType"
 
 	@Check
 	def checkNoCycleInContractOrLibraryHierarchy(ContractOrLibrary contract) {
@@ -211,7 +212,7 @@ class SolidityValidator extends AbstractSolidityValidator {
 			error(
 				"Undeclared type:" + type,
 				null,
-				NO_MEMBER
+				UNDEFINE_TYPE
 			)
 	}
 
@@ -222,7 +223,7 @@ class SolidityValidator extends AbstractSolidityValidator {
 			error(
 				"Undeclared type:" + type,
 				null,
-				NO_MEMBER
+				UNDEFINE_TYPE
 			)
 	}
 

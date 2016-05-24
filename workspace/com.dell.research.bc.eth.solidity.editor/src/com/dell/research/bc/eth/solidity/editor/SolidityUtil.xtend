@@ -140,7 +140,8 @@ class SolidityUtil {
 	 * Get all accessible contacts.  
 	 */
 	def static getAllAccesibleContractsOrLibraries(EObject model) {
-		model.resourceSet.allContents.filter(ContractOrLibrary)
+		var list = model.resourceSet.allContents.filter(ContractOrLibrary).toList
+		return list
 	// TODO: this need to be filtered by the import statements
 	}
 
@@ -148,11 +149,13 @@ class SolidityUtil {
 	 * Returns all field defined by the type or the super types.
 	 */
 	def static getAllFields(EObject model) {
-		var cl = model.getContainerOfType(ContractOrLibrary)
-		var ch = classHierarchy(cl)
-
 		val allAllField = new HashSet
-		allAllField.addAll(cl.body.variables.filter(StandardVariableDeclaration))
+		var cl = model.getContainerOfType(ContractOrLibrary)
+		if(cl==null) return allAllField;
+		var ch = classHierarchy(cl)
+	
+		if (cl.body != null)
+			allAllField.addAll(cl.body.variables.filter(StandardVariableDeclaration))
 		ch.forEach [
 			if (it.body != null)
 				allAllField.addAll(it.body.variables.filter(StandardVariableDeclaration).filter[!isPrivate(it)])
