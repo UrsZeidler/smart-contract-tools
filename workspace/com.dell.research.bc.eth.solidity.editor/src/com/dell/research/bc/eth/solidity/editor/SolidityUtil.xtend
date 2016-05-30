@@ -140,7 +140,21 @@ class SolidityUtil {
 	 * Get all accessible contacts.  
 	 */
 	def static getAllAccesibleContractsOrLibraries(EObject model) {
-		model.resourceSet.allContents.filter(ContractOrLibrary)
+		var s = model.getContainerOfType(Solidity)
+		val uri = model.eResource.URI;
+		val urit = uri.trimSegments(1)
+		s.importDirective.forEach[
+			//TODO: better check for the path
+			var filename = it.importURI.substring(2)
+			var uri1 = urit
+			var uri2 = uri1.appendSegment(filename)
+			try {
+				model.resourceSet.getResource(uri2,true)
+			} catch (Exception exception) {
+			}
+		]
+		var list = model.resourceSet.allContents.filter(ContractOrLibrary).toList
+		return list
 	// TODO: this need to be filtered by the import statements
 	}
 
@@ -150,15 +164,17 @@ class SolidityUtil {
 	def static getAllFields(EObject model) {
 		var cl = model.getContainerOfType(ContractOrLibrary)
 		var ch = classHierarchy(cl)
-
+		
 		val allAllField = new HashSet
-		allAllField.addAll(cl.body.variables.filter(StandardVariableDeclaration))
+		var b = cl.body
+		if(b!=null)
+			allAllField.addAll(b.variables.filter(StandardVariableDeclaration))
 		ch.forEach [
 			if (it.body != null)
-				allAllField.addAll(it.body.variables.filter(StandardVariableDeclaration).filter[!isPrivate(it)])
+				allAllField.addAll(it.body?.variables.filter(StandardVariableDeclaration).filter[!isPrivate(it)])
 		]
 
-		allAllField
+		return allAllField;
 	}
 
 	/**
@@ -169,13 +185,15 @@ class SolidityUtil {
 		var ch = classHierarchy(cl)
 
 		val allStructs = new HashSet
-		allStructs.addAll(cl.body.structs)
+		var b = cl.body
+		if(b!=null)
+			allStructs.addAll(b.structs)
 
 		ch.forEach [
 			if (it.body != null)
 				allStructs.addAll(it.body.structs)
 		]
-		allStructs
+		return allStructs
 	}
 
 	/**
@@ -186,12 +204,14 @@ class SolidityUtil {
 		var ch = classHierarchy(cl)
 
 		val allEnums = new HashSet
-		allEnums.addAll(cl.body.enums)
+		var b = cl.body
+		if(b!=null)
+			allEnums.addAll(b.enums)
 		ch.forEach [
 			if (it.body != null)
 				allEnums.addAll(it.body.enums)
 		]
-		allEnums
+		return allEnums;
 	}
 
 	/**
@@ -202,12 +222,14 @@ class SolidityUtil {
 		var ch = classHierarchy(cl)
 
 		val allEvents = new HashSet
-		allEvents.addAll(cl.body.events)
+		var b = cl.body
+		if(b!=null)
+			allEvents.addAll(b.events)
 		ch.forEach [
 			if (it.body != null)
 				allEvents.addAll(it.body.events)
 		]
-		allEvents
+		return allEvents;
 	}
 
 } // SolidityUtil
