@@ -283,7 +283,7 @@ class SolidityParseTest {
                            uint256 c = 0x87;
                            mapping(address=>bytes32) d;
                            bytes7 name = "Solidity";
-                           customtype varname;
+                           address varname;
                          }
                        }'''.parse.assertNoErrors
     }
