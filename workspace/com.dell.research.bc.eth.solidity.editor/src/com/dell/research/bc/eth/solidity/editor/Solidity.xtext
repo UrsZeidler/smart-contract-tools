@@ -242,7 +242,11 @@ Statement:
     BreakStatement |
     ReturnStatement |
     ThrowStatement |
+    DeleteStatement |
     SimpleStatement));
+
+DeleteStatement:
+	"delete" variable=QualifiedIdentifier ";";
 
 IfStatement:
     "if" "(" condition=Expression ")" trueBody=Statement (=> "else" falseBody=Statement)?;
