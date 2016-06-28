@@ -23,7 +23,7 @@ import org.junit.runners.Suite;
 		PlaceholderStatementTest.class, ReturnParameterListTest.class, SimpleStatementTest.class,
 		SolidityTypeConformanceUnitTest.class, SolidityTypeProviderUnitTest.class, StructDefinitionTest.class,
 		TupleTest.class, TupleTypeTest.class, TypeNameTest.class, VariableDeclarationTest.class,
-		VariableDeclarationStatementTest.class, WhileStatementTest.class })
+		VariableDeclarationStatementTest.class, WhileStatementTest.class,DeleteStatementTest.class })
 public class ParseTestSuite {
 	// Nothing
 } // StatementParseTestSuite
