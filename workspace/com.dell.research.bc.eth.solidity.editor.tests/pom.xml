@@ -16,6 +16,11 @@
     </properties>
 
     <build>
+        <testResources>
+			<testResource>
+				<directory> ${project.basedir}/src-test-resources</directory>
+			</testResource>
+		</testResources>
         <plugins>
             <plugin>
                 <groupId>org.eclipse.xtend</groupId>
@@ -28,6 +33,11 @@
                     <!-- UI or headless -->
                     <useUIHarness>false</useUIHarness>
                     <argLine>${jvm-flags}</argLine>
+					<systemProperties>
+                       <log4j.configuration>file:${project.build.directory}/test-classes/log4j-test.xml</log4j.configuration>
+                       <log4j.debug>false</log4j.debug>
+                       <!-- <log4j.configuration>file:target/test-classes/log4j-test.xml</log4j.configuration> -->
+                    </systemProperties>
                 </configuration>
             </plugin>
         </plugins>

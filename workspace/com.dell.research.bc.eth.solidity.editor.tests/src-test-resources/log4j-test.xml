@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration PUBLIC "-//LOGGER" "http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/xml/doc-files/log4j.dtd">
+<log4j:configuration>
+    <appender name="consoleout" class="org.apache.log4j.ConsoleAppender">
+    </appender>
+
+    <logger name="org.eclipse.xtext.parser.antlr.AbstractInternalAntlrParser">
+        <level value="warn" />
+    </logger>
+    
+    <!-- the root category -->
+    <root>
+        <!-- all log messages of level "info" or higher will be logged, unless 
+            defined otherwise all log messages will be logged to the appender "stdout", 
+            unless defined otherwise -->
+        <!-- The levels in descending order are: -->
+        <!-- OFF -->
+        <!-- FATAL -->
+        <!-- ERROR -->
+        <!-- WARN -->
+        <!-- INFO -->
+        <!-- DEBUG -->
+        <!-- TRACE -->
+        <level value="warn" />
+        <appender-ref ref="consoleout" />
+    </root>
+</log4j:configuration>
