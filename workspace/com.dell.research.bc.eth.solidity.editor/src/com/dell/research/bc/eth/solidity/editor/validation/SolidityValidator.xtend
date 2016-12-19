@@ -97,7 +97,7 @@ class SolidityValidator extends AbstractSolidityValidator {
 		if (contract.containingSolidity.contract.exists[it != contract && it.name == contract.name]) {
 			error(
 				"Duplicate Contract '" + contract.name + "'",
-				SolidityPackage::eINSTANCE.contractOrLibrary_Name,
+				SolidityPackage::eINSTANCE.morC_Name,
 				DUPLICATE_ELEMENT
 			)
 		}
@@ -108,7 +108,7 @@ class SolidityValidator extends AbstractSolidityValidator {
 		if (library.containingSolidity.library.exists[it != library && it.name == library.name]) {
 			error(
 				"Duplicate Library '" + library.name + "'",
-				SolidityPackage::eINSTANCE.contractOrLibrary_Name,
+				SolidityPackage::eINSTANCE.morC_Name,
 				DUPLICATE_ELEMENT
 			)
 		}

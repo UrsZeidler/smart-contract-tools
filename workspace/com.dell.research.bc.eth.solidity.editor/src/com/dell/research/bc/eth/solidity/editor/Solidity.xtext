@@ -21,11 +21,13 @@ generate solidity "http://com.dell.research.bc.eth.solidity.editor/1.0/Solidity"
 import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 
 Solidity:
-    (importDirective+=ImportDirective |
+    (pragma?=Pragma)?  ( importDirective+=ImportDirective |
     contract+=Contract |
     library+=Library)*;
 
-
+Pragma :
+	"pragma" "solidity" "^" major=INT"."minor=INT"."patch=INT ";"
+;
 
 ImportDirective:
     "import" importURI=STRING ";" | 
@@ -84,13 +86,18 @@ FunctionDefinition:
     ("returns" returnParameters=ReturnsParameterList)?
     (block=Block | ";");
 
+
+
 FunctionDefinitionOptionalElement:
-    Const |
-    ModifierInvocation |
+    Const | Payable |
+    ModifierInvocation |  
     VisibilitySpecifier;
 
 Const:
     "constant" {Const};
+
+Payable:
+    "payable" {Payable};
 
 VisibilitySpecifier:
     visibility=VisibilityEnum;
@@ -220,7 +227,11 @@ Event:
     "event" name=ID parameters=ParameterList? isAnonymous?="anonymous"? ";";
 
 ModifierInvocation:
-    name=[Modifier] args=FunctionCallListArguments?;
+    name=[MorC] args=FunctionCallListArguments?;
+
+MorC:
+	ContractOrLibrary | Modifier 
+;
 
 ParameterList:
     "(" {ParameterList} (parameters+=VariableDeclaration ("," parameters+=VariableDeclaration)*)? ")";
@@ -275,7 +286,7 @@ ThrowStatement:
 
     // Only allowed in a Modifier DAF
 PlaceHolderStatement:
-    "_" {PlaceHolderStatement};
+    "_" ";" {PlaceHolderStatement};
 
 Expression:
     Assignment

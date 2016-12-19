@@ -20,6 +20,7 @@ import org.eclipse.xtext.scoping.impl.AbstractDeclarativeScopeProvider
 
 import static extension com.dell.research.bc.eth.solidity.editor.SolidityUtil.*
 import static extension org.eclipse.xtext.EcoreUtil2.*
+import com.dell.research.bc.eth.solidity.editor.solidity.MorC
 
 /**
  * This class contains custom scoping description.
@@ -33,9 +34,10 @@ class SolidityScopeProvider extends AbstractDeclarativeScopeProvider {
 	def IScope scope_ModifierInvocation_name(ModifierInvocation modifier, EReference eReference) {
 		val c = modifier.getContainerOfType(Contract)
 
-		val included = new HashSet()
+		val included = new HashSet<MorC>()
 		var allContracts = c.classHierarchy.filter(Contract)
 		included.addAll(c.body.modifiers)
+		included.addAll(allContracts)
 		allContracts.forEach [
 			included.addAll(it.body.modifiers)
 		]
