@@ -2,7 +2,7 @@
 <feature
       id="com.dell.research.bc.eth.solidity.ui.feature"
       label="Ethereum Solidity UI Feature"
-      version="1.0.0.qualifier"
+      version="1.0.1.qualifier"
       provider-name="Dell Inc.">
 
    <description>

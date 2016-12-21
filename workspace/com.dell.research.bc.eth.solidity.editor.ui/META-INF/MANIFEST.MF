@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Solidity Editor
 Bundle-Vendor: Dell Inc.
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.1.qualifier
 Bundle-SymbolicName: com.dell.research.bc.eth.solidity.editor.ui; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: com.dell.research.bc.eth.solidity.editor;visibility:=reexport,
@@ -19,7 +19,7 @@ Require-Bundle: com.dell.research.bc.eth.solidity.editor;visibility:=reexport,
  org.eclipse.xtext.xbase.lib
 Import-Package: org.apache.log4j,
  org.eclipse.xtext.xbase.lib
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Activator: com.dell.research.bc.eth.solidity.editor.ui.internal.SolidityActivator
 Export-Package: com.dell.research.bc.eth.solidity.editor.ui.quickfix,
  com.dell.research.bc.eth.solidity.editor.ui.contentassist,

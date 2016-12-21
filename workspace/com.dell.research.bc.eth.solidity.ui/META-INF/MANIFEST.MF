@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Ethereum Solidity UI
 Bundle-SymbolicName: com.dell.research.bc.eth.solidity.ui;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.1.qualifier
 Export-Package: com.dell.research.bc.eth.solidity.ui.wizards
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.resources,
@@ -10,4 +10,4 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide;bundle-version="3.5.0",
  org.eclipse.ui.workbench
 Bundle-Vendor: Dell Inc.
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

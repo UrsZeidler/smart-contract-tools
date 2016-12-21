@@ -2,7 +2,7 @@
 <feature
       id="com.dell.research.bc.eth.solidity.editor.feature"
       label="Solidity Editor Feature"
-      version="1.0.0.qualifier">
+      version="1.0.1.qualifier">
 
    <description>
       This is an editor for writing &quot;Smart Contracts&quot; in Solidity.

@@ -3,7 +3,7 @@
   <parent>
     <groupId>com.dell.research.bc</groupId>
     <artifactId>com.dell.research.bc.eth</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <relativePath>../com.dell.research.bc.eth/pom.xml</relativePath>    
   </parent>
   <artifactId>com.dell.research.bc.eth.solidity.editor.ui</artifactId>

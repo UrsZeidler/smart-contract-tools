@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.dell.research.bc</groupId>
 	<artifactId>com.dell.research.bc.eth</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Eclipse Ethereum Parent Project</name>
 
@@ -43,7 +43,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java-version>1.7</java-version>
+		<java-version>1.8</java-version>
 
 		<!-- EMF -->
 		<emf-version>2.11.0-v20150123-0347</emf-version>
@@ -74,7 +74,7 @@
 
 	<modules>
 		<module>../com.dell.research.bc.eth.ui</module>
-		<module>../com.dell.research.bc.eth.ui.feature</module>
+		
 		<module>../com.dell.research.bc.eth.solidity.ui</module>
 		<module>../com.dell.research.bc.eth.solidity.ui.feature</module>
 		<module>../com.dell.research.bc.eth.solidity.editor</module>
@@ -310,7 +310,7 @@
 								<groupId>com.dell.research.bc</groupId>
 								<artifactId>com.dell.research.bc.eth.solidity.editor.target</artifactId>
 								<classifier>com.dell.research.bc.eth.solidity.editor.target</classifier>
-								<version>1.0.0-SNAPSHOT</version>
+								<version>1.0.1-SNAPSHOT</version>
 							</artifact>
 						</target>
 						<environments>
